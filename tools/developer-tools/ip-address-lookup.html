@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Address Lookup - Multi-Tools Hub</title>
+    <meta name="description" content="Look up IP address information online for free. Get geolocation, ISP, and other details about any IP address.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .ip-info-card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .ip-info-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .ip-info-value {
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-map-marker-alt me-3"></i>IP Address Lookup</h1>
+                            <p>Look up IP address information and geolocation details</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="ipInput" class="form-label">IP Address *</label>
+                                    <input type="text" class="form-control" id="ipInput" placeholder="Enter IP address (e.g., 8.8.8.8)">
+                                    <div class="form-text">Enter an IP address to look up</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="lookupIP()">
+                                        <i class="fas fa-search me-2"></i>Lookup IP
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="getMyIP()">
+                                        <i class="fas fa-user me-2"></i>Get My IP
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearIP()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="lookupOptions" class="form-label">Lookup Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeISP" checked>
+                                        <label class="form-check-label" for="includeISP">
+                                            Include ISP information
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeLocation" checked>
+                                        <label class="form-check-label" for="includeLocation">
+                                            Include location details
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeTimezone" checked>
+                                        <label class="form-check-label" for="includeTimezone">
+                                            Include timezone information
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="ipResults" class="form-label">IP Information</label>
+                                    <div class="ip-info-card" id="ipResults">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                            <p>Enter an IP address to see information here</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="lookupStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use IP Address Lookup</h4>
+                            <ol>
+                                <li>Enter an IP address in the input field</li>
+                                <li>Configure lookup options as needed</li>
+                                <li>Click "Lookup IP" to get information</li>
+                                <li>Use "Get My IP" to find your current IP address</li>
+                            </ol>
+
+                            <h5 class="mt-4">IP Information Provided</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Information</h6>
+                                    <ul>
+                                        <li>IP Address</li>
+                                        <li>IP Version (IPv4/IPv6)</li>
+                                        <li>Hostname</li>
+                                        <li>Organization</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Location Details</h6>
+                                    <ul>
+                                        <li>Country and Region</li>
+                                        <li>City and Postal Code</li>
+                                        <li>Coordinates (Lat/Long)</li>
+                                        <li>Timezone</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeIPLookup();
+        });
+
+        function initializeIPLookup() {
+            // Add any initialization code here
+        }
+
+        function lookupIP() {
+            const ipInput = document.getElementById('ipInput');
+            const ip = ipInput.value.trim();
+            
+            if (!ip) {
+                showNotification('Please enter an IP address', 'warning');
+                return;
+            }
+
+            if (!isValidIP(ip)) {
+                showNotification('Please enter a valid IP address', 'error');
+                return;
+            }
+
+            // Show loading state
+            showLoadingState();
+            
+            // Simulate API call (in real implementation, you would call an actual IP lookup service)
+            setTimeout(() => {
+                const ipInfo = getIPInfo(ip);
+                displayIPInfo(ipInfo);
+            }, 1000);
+        }
+
+        function getMyIP() {
+            // Show loading state
+            showLoadingState();
+            
+            // Simulate getting current IP
+            setTimeout(() => {
+                const myIP = '192.168.1.1'; // In real implementation, get from API
+                document.getElementById('ipInput').value = myIP;
+                
+                const ipInfo = getIPInfo(myIP);
+                displayIPInfo(ipInfo);
+            }, 1000);
+        }
+
+        function isValidIP(ip) {
+            const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+            return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+        }
+
+        function getIPInfo(ip) {
+            // Mock IP information (in real implementation, call an API)
+            return {
+                ip: ip,
+                version: ip.includes(':') ? 'IPv6' : 'IPv4',
+                hostname: `host-${ip.replace(/\./g, '-')}.example.com`,
+                organization: 'Example ISP Inc.',
+                country: 'United States',
+                region: 'California',
+                city: 'San Francisco',
+                postalCode: '94105',
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timezone: 'America/Los_Angeles',
+                isp: 'Example Internet Service Provider',
+                asn: 'AS12345',
+                isMobile: false,
+                isProxy: false,
+                isHosting: false
+            };
+        }
+
+        function displayIPInfo(ipInfo) {
+            const ipResults = document.getElementById('ipResults');
+            const includeISP = document.getElementById('includeISP').checked;
+            const includeLocation = document.getElementById('includeLocation').checked;
+            const includeTimezone = document.getElementById('includeTimezone').checked;
+            
+            let html = '<div class="row">';
+            
+            // Basic Information
+            html += '<div class="col-md-6">';
+            html += '<h6 class="mb-3"><i class="fas fa-info-circle me-2"></i>Basic Information</h6>';
+            html += `<div class="mb-2"><span class="ip-info-label">IP Address:</span> <span class="ip-info-value">${ipInfo.ip}</span></div>`;
+            html += `<div class="mb-2"><span class="ip-info-label">Version:</span> <span class="ip-info-value">${ipInfo.version}</span></div>`;
+            html += `<div class="mb-2"><span class="ip-info-label">Hostname:</span> <span class="ip-info-value">${ipInfo.hostname}</span></div>`;
+            html += `<div class="mb-2"><span class="ip-info-label">Organization:</span> <span class="ip-info-value">${ipInfo.organization}</span></div>`;
+            html += '</div>';
+            
+            // Location Information
+            if (includeLocation) {
+                html += '<div class="col-md-6">';
+                html += '<h6 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>Location</h6>';
+                html += `<div class="mb-2"><span class="ip-info-label">Country:</span> <span class="ip-info-value">${ipInfo.country}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">Region:</span> <span class="ip-info-value">${ipInfo.region}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">City:</span> <span class="ip-info-value">${ipInfo.city}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">Postal Code:</span> <span class="ip-info-value">${ipInfo.postalCode}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">Coordinates:</span> <span class="ip-info-value">${ipInfo.latitude}, ${ipInfo.longitude}</span></div>`;
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            
+            // ISP Information
+            if (includeISP) {
+                html += '<div class="row mt-3">';
+                html += '<div class="col-12">';
+                html += '<h6 class="mb-3"><i class="fas fa-building me-2"></i>ISP Information</h6>';
+                html += `<div class="mb-2"><span class="ip-info-label">ISP:</span> <span class="ip-info-value">${ipInfo.isp}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">ASN:</span> <span class="ip-info-value">${ipInfo.asn}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">Mobile:</span> <span class="ip-info-value">${ipInfo.isMobile ? 'Yes' : 'No'}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">Proxy:</span> <span class="ip-info-value">${ipInfo.isProxy ? 'Yes' : 'No'}</span></div>`;
+                html += `<div class="mb-2"><span class="ip-info-label">Hosting:</span> <span class="ip-info-value">${ipInfo.isHosting ? 'Yes' : 'No'}</span></div>`;
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            // Timezone Information
+            if (includeTimezone) {
+                html += '<div class="row mt-3">';
+                html += '<div class="col-12">';
+                html += '<h6 class="mb-3"><i class="fas fa-clock me-2"></i>Timezone</h6>';
+                html += `<div class="mb-2"><span class="ip-info-label">Timezone:</span> <span class="ip-info-value">${ipInfo.timezone}</span></div>`;
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            ipResults.innerHTML = html;
+            
+            // Hide loading state
+            hideLoadingState();
+            
+            showNotification('IP information retrieved successfully', 'success');
+        }
+
+        function showLoadingState() {
+            const ipResults = document.getElementById('ipResults');
+            ipResults.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Looking up IP information...</p>
+                </div>
+            `;
+        }
+
+        function hideLoadingState() {
+            // Loading state is hidden when displayIPInfo is called
+        }
+
+        function clearIP() {
+            document.getElementById('ipInput').value = '';
+            document.getElementById('ipResults').innerHTML = `
+                <div class="text-center text-muted">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>Enter an IP address to see information here</p>
+                </div>
+            `;
+            document.getElementById('lookupStatus').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

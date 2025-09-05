@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoji Keyboard - Multi-Tools Hub</title>
+  <meta name="description" content="Copy and paste emojis quickly. Search, filter by category, and one-click copy." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../../assets/css/style.css" rel="stylesheet" />
+  <style>
+    .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: .5rem; }
+    .emoji-btn { font-size: 28px; line-height: 48px; height: 52px; text-align: center; border: 1px solid #e9ecef; border-radius: .5rem; background: #fff; cursor: pointer; }
+    .emoji-btn:hover { background: #f8f9fa; }
+    .copied-toast { position: fixed; bottom: 16px; right: 16px; z-index: 1050; }
+  </style>
+  <script>
+    // Minimal inline fallback notification if main.js is not present
+    function showNotification(msg){ try{window.showSiteToast(msg)}catch(e){const t=document.createElement('div');t.className='alert alert-success copied-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1200)} }
+  </script>
+</head>
+<body>
+  <div id="header"></div>
+
+  <div class="tool-page">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="tool-content">
+            <div class="tool-header">
+              <h1 class="mb-1">Emoji Keyboard</h1>
+              <p class="text-muted">Search, click to copy, and use anywhere</p>
+            </div>
+
+            <div class="ad-banner text-center mb-4">
+              <div class="ad-placeholder bg-light border rounded p-3">
+                <p class="text-muted mb-0">Advertisement Space</p>
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-end mb-3">
+              <div class="col-md-6">
+                <label class="form-label" for="emojiSearch">Search</label>
+                <input id="emojiSearch" type="text" class="form-control" placeholder="Search emojis (e.g. smile, fire, party)" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="emojiCategory">Category</label>
+                <select id="emojiCategory" class="form-select">
+                  <option value="all">All</option>
+                  <option value="smileys">Smileys</option>
+                  <option value="people">People</option>
+                  <option value="animals">Animals & Nature</option>
+                  <option value="food">Food & Drink</option>
+                  <option value="activity">Activity</option>
+                  <option value="travel">Travel & Places</option>
+                  <option value="objects">Objects</option>
+                  <option value="symbols">Symbols</option>
+                  <option value="flags">Flags</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="skinTone">Skin Tone</label>
+                <select id="skinTone" class="form-select">
+                  <option value="none">Default</option>
+                  <option value="\uD83C\uDFFB">Light</option>
+                  <option value="\uD83C\uDFFC">Medium-Light</option>
+                  <option value="\uD83C\uDFFD">Medium</option>
+                  <option value="\uD83C\uDFFE">Medium-Dark</option>
+                  <option value="\uD83C\uDFFF">Dark</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small id="emojiCount" class="text-muted">0 results</small>
+              <div class="d-flex gap-2">
+                <button id="copyAll" class="btn btn-outline-primary btn-sm" type="button">Copy All</button>
+                <button id="clearSel" class="btn btn-outline-secondary btn-sm" type="button">Clear</button>
+              </div>
+            </div>
+
+            <div id="emojiGrid" class="emoji-grid"></div>
+
+            <div class="ad-banner text-center mt-4">
+              <div class="ad-placeholder bg-light border rounded p-3">
+                <p class="text-muted mb-0">Advertisement Space</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+  <script>
+    // Compact emoji dataset (popular subset across categories)
+    const EMOJIS = [
+      {e:'😀', k:['grinning','smile','happy'], c:'smileys'},
+      {e:'😁', k:['beaming','smile'], c:'smileys'},
+      {e:'😂', k:['joy','tears','lol'], c:'smileys'},
+      {e:'🤣', k:['rofl','laugh'], c:'smileys'},
+      {e:'😊', k:['blush','smile'], c:'smileys'},
+      {e:'😍', k:['heart eyes','love'], c:'smileys'},
+      {e:'😘', k:['kiss','love'], c:'smileys'},
+      {e:'😎', k:['cool','sunglasses'], c:'smileys'},
+      {e:'🤔', k:['think','hmm'], c:'smileys'},
+      {e:'🤩', k:['star','excited'], c:'smileys'},
+      {e:'🥳', k:['party','celebrate','birthday'], c:'smileys'},
+      {e:'😢', k:['cry','sad'], c:'smileys'},
+      {e:'😡', k:['angry','mad'], c:'smileys'},
+      {e:'👍', k:['thumbs up','like','approve'], c:'people', s:true},
+      {e:'👎', k:['thumbs down','dislike'], c:'people', s:true},
+      {e:'👏', k:['clap','applause'], c:'people', s:true},
+      {e:'🙏', k:['pray','thanks'], c:'people', s:true},
+      {e:'👋', k:['wave','hello','hi'], c:'people', s:true},
+      {e:'🔥', k:['fire','lit','hot'], c:'symbols'},
+      {e:'💯', k:['100','perfect','keep it real'], c:'symbols'},
+      {e:'✨', k:['sparkles','shine'], c:'symbols'},
+      {e:'⭐',  k:['star','rate'], c:'symbols'},
+      {e:'🌟', k:['glowing star'], c:'symbols'},
+      {e:'🎉', k:['party popper','celebration'], c:'activity'},
+      {e:'🏆', k:['trophy','win'], c:'activity'},
+      {e:'⚽',  k:['soccer','football'], c:'activity'},
+      {e:'🎮', k:['game','controller'], c:'activity'},
+      {e:'🐶', k:['dog','pet'], c:'animals'},
+      {e:'🐱', k:['cat','pet'], c:'animals'},
+      {e:'🦁', k:['lion','king'], c:'animals'},
+      {e:'🐼', k:['panda','bear'], c:'animals'},
+      {e:'🌸', k:['flower','sakura'], c:'animals'},
+      {e:'🌞', k:['sun','day'], c:'travel'},
+      {e:'🌙', k:['moon','night'], c:'travel'},
+      {e:'⭐️', k:['star','night'], c:'symbols'},
+      {e:'🍕', k:['pizza','food'], c:'food'},
+      {e:'🍔', k:['burger','food'], c:'food'},
+      {e:'🍣', k:['sushi','food'], c:'food'},
+      {e:'☕',  k:['coffee','drink'], c:'food'},
+      {e:'🍰', k:['cake','dessert','birthday'], c:'food'},
+      {e:'✈️', k:['plane','travel'], c:'travel'},
+      {e:'🚗', k:['car','drive'], c:'travel'},
+      {e:'🏝️',k:['island','vacation'], c:'travel'},
+      {e:'📸', k:['camera','photo'], c:'objects'},
+      {e:'💡', k:['idea','light'], c:'objects'},
+      {e:'💻', k:['laptop','computer','dev'], c:'objects'},
+      {e:'📱', k:['phone','mobile'], c:'objects'},
+      {e:'🧠', k:['brain','smart'], c:'objects'},
+      {e:'❤️', k:['heart','love'], c:'symbols'},
+      {e:'💔', k:['broken heart'], c:'symbols'},
+      {e:'✅', k:['check','done'], c:'symbols'},
+      {e:'❌', k:['x','close','wrong'], c:'symbols'},
+      {e:'🇺🇸',k:['flag us','usa'], c:'flags'},
+      {e:'🇬🇧',k:['flag uk','britain'], c:'flags'},
+      {e:'🇮🇳',k:['flag india'], c:'flags'}
+    ];
+
+    const grid = document.getElementById('emojiGrid');
+    const search = document.getElementById('emojiSearch');
+    const category = document.getElementById('emojiCategory');
+    const skinTone = document.getElementById('skinTone');
+    const countEl = document.getElementById('emojiCount');
+    const copyAllBtn = document.getElementById('copyAll');
+    const clearSelBtn = document.getElementById('clearSel');
+
+    let lastResults = [];
+
+    function applyTone(e){
+      const tone = skinTone.value;
+      if(tone==='none') return e;
+      // Only apply to emojis marked s:true (supporting tone)
+      try { return e + tone; } catch(_){ return e; }
+    }
+
+    function filterEmojis(){
+      const q = (search.value || '').toLowerCase().trim();
+      const cat = category.value;
+      const results = EMOJIS.filter(x => (cat==='all' || x.c===cat) && (!q || x.k.some(k => k.includes(q))));
+      render(results);
+    }
+
+    function render(list){
+      lastResults = list;
+      grid.innerHTML = list.map(x => `<button class="emoji-btn" title="${(x.k[0]||'emoji')}" data-base="${x.e}">${x.s?applyTone(x.e):x.e}</button>`).join('');
+      countEl.textContent = `${list.length} results`;
+    }
+
+    grid.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.emoji-btn');
+      if(!btn) return;
+      const base = btn.getAttribute('data-base');
+      const toCopy = EMOJIS.find(x=>x.e===base)?.s ? applyTone(base) : base;
+      navigator.clipboard.writeText(toCopy).then(()=>showNotification('Emoji copied')).catch(()=>{});
+    });
+
+    copyAllBtn.addEventListener('click', ()=>{
+      if(!lastResults.length) return;
+      const text = lastResults.map(x=> x.s?applyTone(x.e):x.e).join(' ');
+      navigator.clipboard.writeText(text).then(()=>showNotification('All emojis copied')).catch(()=>{});
+    });
+
+    clearSelBtn.addEventListener('click', ()=>{ search.value=''; category.value='all'; skinTone.value='none'; filterEmojis(); });
+
+    search.addEventListener('input', filterEmojis);
+    category.addEventListener('change', filterEmojis);
+    skinTone.addEventListener('change', filterEmojis);
+
+    // initial
+    render(EMOJIS);
+  </script>
+</body>
+</html>
+
+

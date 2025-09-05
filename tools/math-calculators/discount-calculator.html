@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discount Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Calculate discounts and savings online for free. Find final price after discount and percentage savings.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .discount-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .discount-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .discount-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .discount-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .discount-detail-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .savings-highlight {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-percentage me-3"></i>Discount Calculator</h1>
+                            <p>Calculate discounts, savings, and final prices</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="originalPrice" class="form-label">Original Price *</label>
+                                    <input type="number" class="form-control" id="originalPrice" placeholder="Enter original price" step="0.01">
+                                    <div class="form-text">Enter the original price before discount</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="discountType" class="form-label">Discount Type</label>
+                                    <select class="form-select" id="discountType">
+                                        <option value="percentage">Percentage (%)</option>
+                                        <option value="fixed">Fixed Amount</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="discountValue" class="form-label">Discount Value *</label>
+                                    <input type="number" class="form-control" id="discountValue" placeholder="Enter discount value" step="0.01">
+                                    <div class="form-text">Enter the discount percentage or fixed amount</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="taxRate" class="form-label">Tax Rate (%)</label>
+                                    <input type="number" class="form-control" id="taxRate" placeholder="Enter tax rate" step="0.01" value="0">
+                                    <div class="form-text">Enter tax rate (optional)</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="calculateDiscount()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate Discount
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearDiscount()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="discountOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showBreakdown" checked>
+                                        <label class="form-check-label" for="showBreakdown">
+                                            Show detailed breakdown
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showSavings" checked>
+                                        <label class="form-check-label" for="showSavings">
+                                            Show savings highlight
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="discountResults" style="display: none;">
+                                    <div class="discount-result">
+                                        <h2 class="mb-4">Final Price</h2>
+                                        <div class="discount-value" id="finalPrice">$0.00</div>
+                                        <div class="mt-3">
+                                            <small>You save: <span id="totalSavings">$0.00</span></small><br>
+                                            <small>Discount: <span id="discountPercentage">0%</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="discount-details" id="discountBreakdown" style="display: none;">
+                                        <h5>Price Breakdown</h5>
+                                        <div class="discount-detail-item">
+                                            <span>Original Price:</span>
+                                            <span id="originalPriceBreakdown">$0.00</span>
+                                        </div>
+                                        <div class="discount-detail-item">
+                                            <span>Discount Amount:</span>
+                                            <span id="discountAmountBreakdown">$0.00</span>
+                                        </div>
+                                        <div class="discount-detail-item">
+                                            <span>Price After Discount:</span>
+                                            <span id="priceAfterDiscount">$0.00</span>
+                                        </div>
+                                        <div class="discount-detail-item">
+                                            <span>Tax Amount:</span>
+                                            <span id="taxAmount">$0.00</span>
+                                        </div>
+                                        <div class="discount-detail-item">
+                                            <span>Final Price:</span>
+                                            <span id="finalPriceBreakdown">$0.00</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="savings-highlight" id="savingsHighlight" style="display: none;">
+                                        <h6><i class="fas fa-piggy-bank me-2"></i>Your Savings</h6>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>Amount Saved:</strong> <span id="amountSaved">$0.00</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Percentage Saved:</strong> <span id="percentageSaved">0%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="discountStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Discount Calculator</h4>
+                            <ol>
+                                <li>Enter the original price of the item</li>
+                                <li>Select discount type (percentage or fixed amount)</li>
+                                <li>Enter the discount value</li>
+                                <li>Optionally enter tax rate</li>
+                                <li>Click "Calculate Discount" to see results</li>
+                            </ol>
+
+                            <h5 class="mt-4">Discount Calculation Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Calculations</h6>
+                                    <ul>
+                                        <li>Percentage discounts</li>
+                                        <li>Fixed amount discounts</li>
+                                        <li>Final price calculation</li>
+                                        <li>Savings amount</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Features</h6>
+                                    <ul>
+                                        <li>Tax calculations</li>
+                                        <li>Detailed breakdown</li>
+                                        <li>Savings percentage</li>
+                                        <li>Multiple discount types</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDiscountCalculator();
+        });
+
+        function initializeDiscountCalculator() {
+            // Add any initialization code here
+        }
+
+        function calculateDiscount() {
+            const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = parseFloat(document.getElementById('discountValue').value);
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            
+            if (isNaN(originalPrice) || isNaN(discountValue) || originalPrice <= 0 || discountValue < 0) {
+                showNotification('Please enter valid price and discount values', 'warning');
+                return;
+            }
+            
+            let discountAmount;
+            let discountPercentage;
+            
+            if (discountType === 'percentage') {
+                if (discountValue > 100) {
+                    showNotification('Discount percentage cannot exceed 100%', 'error');
+                    return;
+                }
+                discountAmount = (originalPrice * discountValue) / 100;
+                discountPercentage = discountValue;
+            } else {
+                if (discountValue > originalPrice) {
+                    showNotification('Discount amount cannot exceed original price', 'error');
+                    return;
+                }
+                discountAmount = discountValue;
+                discountPercentage = (discountAmount / originalPrice) * 100;
+            }
+            
+            const priceAfterDiscount = originalPrice - discountAmount;
+            const taxAmount = (priceAfterDiscount * taxRate) / 100;
+            const finalPrice = priceAfterDiscount + taxAmount;
+            const totalSavings = originalPrice - finalPrice;
+            
+            displayDiscountResults(originalPrice, discountAmount, discountPercentage, priceAfterDiscount, taxAmount, finalPrice, totalSavings);
+            
+            showNotification('Discount calculated successfully', 'success');
+        }
+
+        function displayDiscountResults(originalPrice, discountAmount, discountPercentage, priceAfterDiscount, taxAmount, finalPrice, totalSavings) {
+            // Update main result
+            document.getElementById('finalPrice').textContent = '$' + finalPrice.toFixed(2);
+            document.getElementById('totalSavings').textContent = '$' + totalSavings.toFixed(2);
+            document.getElementById('discountPercentage').textContent = discountPercentage.toFixed(1) + '%';
+            
+            // Update breakdown
+            if (document.getElementById('showBreakdown').checked) {
+                document.getElementById('originalPriceBreakdown').textContent = '$' + originalPrice.toFixed(2);
+                document.getElementById('discountAmountBreakdown').textContent = '$' + discountAmount.toFixed(2);
+                document.getElementById('priceAfterDiscount').textContent = '$' + priceAfterDiscount.toFixed(2);
+                document.getElementById('taxAmount').textContent = '$' + taxAmount.toFixed(2);
+                document.getElementById('finalPriceBreakdown').textContent = '$' + finalPrice.toFixed(2);
+                document.getElementById('discountBreakdown').style.display = 'block';
+            } else {
+                document.getElementById('discountBreakdown').style.display = 'none';
+            }
+            
+            // Update savings highlight
+            if (document.getElementById('showSavings').checked) {
+                document.getElementById('amountSaved').textContent = '$' + totalSavings.toFixed(2);
+                document.getElementById('percentageSaved').textContent = ((totalSavings / originalPrice) * 100).toFixed(1) + '%';
+                document.getElementById('savingsHighlight').style.display = 'block';
+            } else {
+                document.getElementById('savingsHighlight').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('discountResults').style.display = 'block';
+        }
+
+        function clearDiscount() {
+            document.getElementById('originalPrice').value = '';
+            document.getElementById('discountValue').value = '';
+            document.getElementById('taxRate').value = '0';
+            document.getElementById('discountResults').style.display = 'none';
+            document.getElementById('discountStatus').style.display = 'none';
+            
+            showNotification('Discount calculator cleared', 'info');
+        }
+    </script>
+</body>
+</html>

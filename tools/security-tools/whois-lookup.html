@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whois Lookup - Multi-Tools Hub</title>
+    <meta name="description" content="Look up domain Whois information online for free. Get domain registration details and ownership information.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .whois-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .whois-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .whois-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .whois-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .whois-detail-item:last-child {
+            border-bottom: none;
+        }
+        .whois-history {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .whois-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .whois-raw {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .raw-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            color: #495057;
+        }
+        .whois-stats {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-search me-3"></i>Whois Lookup</h1>
+                            <p>Look up domain registration and ownership information</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="domainName" class="form-label">Domain Name</label>
+                                    <input type="text" class="form-control" id="domainName" placeholder="example.com">
+                                    <div class="form-text">Enter a domain name to look up Whois information</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="whoisOptions" class="form-label">Lookup Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showRegistrar" checked>
+                                        <label class="form-check-label" for="showRegistrar">
+                                            Show registrar information
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showDates" checked>
+                                        <label class="form-check-label" for="showDates">
+                                            Show registration dates
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showNameservers" checked>
+                                        <label class="form-check-label" for="showNameservers">
+                                            Show nameservers
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showRaw" checked>
+                                        <label class="form-check-label" for="showRaw">
+                                            Show raw Whois data
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="whoisPresets" class="form-label">Quick Presets</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('basic')">Basic</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('detailed')">Detailed</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('raw')">Raw Data</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('expiration')">Expiration</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="lookupWhois()">
+                                        <i class="fas fa-search me-2"></i>Lookup Whois
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearWhois()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="whoisOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show lookup history
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showStats" checked>
+                                        <label class="form-check-label" for="showStats">
+                                            Show domain statistics
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="whoisResults" style="display: none;">
+                                    <div class="whois-result">
+                                        <h2 class="mb-4">Whois Information</h2>
+                                        <div class="whois-value" id="whoisValue">Click Lookup</div>
+                                        <div class="mt-3">
+                                            <small>Domain: <span id="domainDisplay">-</span></small><br>
+                                            <small>Status: <span id="statusDisplay">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="whois-details" id="whoisDetails" style="display: none;">
+                                        <h5>Domain Details</h5>
+                                        <div class="whois-detail-item">
+                                            <span>Domain Name:</span>
+                                            <span id="domainNameDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Registrar:</span>
+                                            <span id="registrarDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Registrar URL:</span>
+                                            <span id="registrarUrlDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Registrar Email:</span>
+                                            <span id="registrarEmailDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Registrar Phone:</span>
+                                            <span id="registrarPhoneDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Creation Date:</span>
+                                            <span id="creationDateDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Expiration Date:</span>
+                                            <span id="expirationDateDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Updated Date:</span>
+                                            <span id="updatedDateDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Status:</span>
+                                            <span id="statusDetail">-</span>
+                                        </div>
+                                        <div class="whois-detail-item">
+                                            <span>Registry Expiry:</span>
+                                            <span id="registryExpiryDetail">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="whois-details" id="nameserversDetails" style="display: none;">
+                                        <h5>Nameservers</h5>
+                                        <div id="nameserversList"></div>
+                                    </div>
+
+                                    <div class="whois-raw" id="whoisRaw" style="display: none;">
+                                        <h5>Raw Whois Data</h5>
+                                        <div class="raw-text" id="rawText"></div>
+                                    </div>
+
+                                    <div class="whois-stats" id="whoisStats" style="display: none;">
+                                        <h5>Domain Statistics</h5>
+                                        <div class="stat-item">
+                                            <span>Lookup Time:</span>
+                                            <span id="lookupTime">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Data Source:</span>
+                                            <span id="dataSource">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Last Updated:</span>
+                                            <span id="lastUpdated">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Days Until Expiry:</span>
+                                            <span id="daysUntilExpiry">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="whois-history" id="whoisHistory" style="display: none;">
+                                        <h5>Lookup History</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Looking up Whois information...</p>
+                                </div>
+
+                                <div class="alert alert-info" id="whoisStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Whois Lookup</h4>
+                            <ol>
+                                <li>Enter a domain name in the input field</li>
+                                <li>Select which information to display</li>
+                                <li>Use quick presets for common lookups</li>
+                                <li>Click "Lookup Whois" to get domain information</li>
+                                <li>View detailed registration and ownership data</li>
+                            </ol>
+
+                            <h5 class="mt-4">Whois Lookup Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Information</h6>
+                                    <ul>
+                                        <li>Domain registration details</li>
+                                        <li>Registrar information</li>
+                                        <li>Registration and expiration dates</li>
+                                        <li>Domain status and ownership</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Features</h6>
+                                    <ul>
+                                        <li>Nameserver information</li>
+                                        <li>Raw Whois data</li>
+                                        <li>Domain statistics</li>
+                                        <li>Lookup history tracking</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWhoisLookup();
+        });
+
+        let whoisHistory = [];
+
+        function initializeWhoisLookup() {
+            // Auto-detect current domain
+            document.getElementById('domainName').addEventListener('focus', function() {
+                if (!this.value) {
+                    this.placeholder = window.location.hostname;
+                }
+            });
+        }
+
+        function lookupWhois() {
+            const domainName = document.getElementById('domainName').value.trim();
+            
+            if (!domainName) {
+                showNotification('Please enter a domain name', 'warning');
+                return;
+            }
+            
+            const cleanDomain = cleanDomainName(domainName);
+            if (!isValidDomain(cleanDomain)) {
+                showNotification('Please enter a valid domain name', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            // Simulate API call (in real implementation, use actual Whois API)
+            setTimeout(() => {
+                try {
+                    const whoisData = getWhoisData(cleanDomain);
+                    displayWhoisResults(whoisData);
+                    addToHistory(whoisData);
+                    showNotification('Whois lookup completed', 'success');
+                } catch (error) {
+                    showNotification('Error looking up Whois: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            }, 2000);
+        }
+
+        function getWhoisData(domain) {
+            // Mock data - in real implementation, use actual Whois API
+            const mockData = {
+                domain: domain,
+                registrar: 'Example Registrar Inc.',
+                registrarUrl: 'https://example-registrar.com',
+                registrarEmail: 'support@example-registrar.com',
+                registrarPhone: '+1.555.123.4567',
+                creationDate: '2020-01-15T00:00:00Z',
+                expirationDate: '2025-01-15T00:00:00Z',
+                updatedDate: '2023-06-15T00:00:00Z',
+                status: 'clientTransferProhibited',
+                registryExpiry: '2025-01-15T00:00:00Z',
+                nameservers: [
+                    'ns1.example-registrar.com',
+                    'ns2.example-registrar.com',
+                    'ns3.example-registrar.com'
+                ],
+                rawData: `Domain Name: ${domain}
+Registrar: Example Registrar Inc.
+Registrar URL: https://example-registrar.com
+Registrar Email: support@example-registrar.com
+Registrar Phone: +1.555.123.4567
+Creation Date: 2020-01-15T00:00:00Z
+Expiration Date: 2025-01-15T00:00:00Z
+Updated Date: 2023-06-15T00:00:00Z
+Status: clientTransferProhibited
+Registry Expiry: 2025-01-15T00:00:00Z
+Name Server: ns1.example-registrar.com
+Name Server: ns2.example-registrar.com
+Name Server: ns3.example-registrar.com`,
+                lookupTime: '150ms',
+                dataSource: 'Whois API',
+                lastUpdated: new Date().toISOString()
+            };
+            
+            return mockData;
+        }
+
+        function displayWhoisResults(whoisData) {
+            // Update main result
+            document.getElementById('whoisValue').textContent = whoisData.domain;
+            document.getElementById('domainDisplay').textContent = whoisData.domain;
+            document.getElementById('statusDisplay').textContent = whoisData.status;
+            
+            // Update details
+            updateWhoisDetails(whoisData);
+            document.getElementById('whoisDetails').style.display = 'block';
+            
+            // Update nameservers
+            if (document.getElementById('showNameservers').checked) {
+                updateNameservers(whoisData.nameservers);
+                document.getElementById('nameserversDetails').style.display = 'block';
+            } else {
+                document.getElementById('nameserversDetails').style.display = 'none';
+            }
+            
+            // Update raw data
+            if (document.getElementById('showRaw').checked) {
+                updateRawData(whoisData.rawData);
+                document.getElementById('whoisRaw').style.display = 'block';
+            } else {
+                document.getElementById('whoisRaw').style.display = 'none';
+            }
+            
+            // Update statistics
+            if (document.getElementById('showStats').checked) {
+                updateWhoisStats(whoisData);
+                document.getElementById('whoisStats').style.display = 'block';
+            } else {
+                document.getElementById('whoisStats').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateWhoisHistory();
+                document.getElementById('whoisHistory').style.display = 'block';
+            } else {
+                document.getElementById('whoisHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('whoisResults').style.display = 'block';
+        }
+
+        function updateWhoisDetails(whoisData) {
+            document.getElementById('domainNameDetail').textContent = whoisData.domain;
+            document.getElementById('registrarDetail').textContent = whoisData.registrar;
+            document.getElementById('registrarUrlDetail').textContent = whoisData.registrarUrl;
+            document.getElementById('registrarEmailDetail').textContent = whoisData.registrarEmail;
+            document.getElementById('registrarPhoneDetail').textContent = whoisData.registrarPhone;
+            document.getElementById('creationDateDetail').textContent = new Date(whoisData.creationDate).toLocaleString();
+            document.getElementById('expirationDateDetail').textContent = new Date(whoisData.expirationDate).toLocaleString();
+            document.getElementById('updatedDateDetail').textContent = new Date(whoisData.updatedDate).toLocaleString();
+            document.getElementById('statusDetail').textContent = whoisData.status;
+            document.getElementById('registryExpiryDetail').textContent = new Date(whoisData.registryExpiry).toLocaleString();
+        }
+
+        function updateNameservers(nameservers) {
+            const nameserversList = document.getElementById('nameserversList');
+            nameserversList.innerHTML = nameservers.map(ns => `
+                <div class="whois-detail-item">
+                    <span>Nameserver:</span>
+                    <span>${ns}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateRawData(rawData) {
+            document.getElementById('rawText').textContent = rawData;
+        }
+
+        function updateWhoisStats(whoisData) {
+            document.getElementById('lookupTime').textContent = whoisData.lookupTime;
+            document.getElementById('dataSource').textContent = whoisData.dataSource;
+            document.getElementById('lastUpdated').textContent = new Date(whoisData.lastUpdated).toLocaleString();
+            
+            const daysUntilExpiry = Math.ceil((new Date(whoisData.expirationDate) - new Date()) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysUntilExpiry').textContent = daysUntilExpiry > 0 ? daysUntilExpiry + ' days' : 'Expired';
+        }
+
+        function addToHistory(whoisData) {
+            whoisHistory.unshift({
+                domain: whoisData.domain,
+                registrar: whoisData.registrar,
+                status: whoisData.status,
+                created: new Date().toISOString()
+            });
+            if (whoisHistory.length > 20) {
+                whoisHistory.pop();
+            }
+        }
+
+        function updateWhoisHistory() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = whoisHistory.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div class="whois-text">${item.domain}</div>
+                        <small class="text-muted">${item.registrar}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="lookupWhoisFromHistory('${item.domain}')">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function lookupWhoisFromHistory(domain) {
+            document.getElementById('domainName').value = domain;
+            lookupWhois();
+        }
+
+        function setPreset(type) {
+            switch (type) {
+                case 'basic':
+                    document.getElementById('showRegistrar').checked = true;
+                    document.getElementById('showDates').checked = true;
+                    document.getElementById('showNameservers').checked = false;
+                    document.getElementById('showRaw').checked = false;
+                    break;
+                case 'detailed':
+                    document.getElementById('showRegistrar').checked = true;
+                    document.getElementById('showDates').checked = true;
+                    document.getElementById('showNameservers').checked = true;
+                    document.getElementById('showRaw').checked = true;
+                    break;
+                case 'raw':
+                    document.getElementById('showRegistrar').checked = false;
+                    document.getElementById('showDates').checked = false;
+                    document.getElementById('showNameservers').checked = false;
+                    document.getElementById('showRaw').checked = true;
+                    break;
+                case 'expiration':
+                    document.getElementById('showRegistrar').checked = false;
+                    document.getElementById('showDates').checked = true;
+                    document.getElementById('showNameservers').checked = false;
+                    document.getElementById('showRaw').checked = false;
+                    break;
+            }
+            
+            showNotification(`${type} preset applied`, 'info');
+        }
+
+        function clearWhois() {
+            document.getElementById('domainName').value = '';
+            document.getElementById('whoisValue').textContent = 'Click Lookup';
+            document.getElementById('whoisResults').style.display = 'none';
+            document.getElementById('whoisStatus').style.display = 'none';
+            
+            showNotification('Whois lookup cleared', 'info');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('whoisResults').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function cleanDomainName(domain) {
+            return domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        }
+
+        function isValidDomain(domain) {
+            const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+            return domainRegex.test(domain);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter - Multi-Tools Hub</title>
+    <meta name="description" content="Format and validate JSON data online for free. Beautify JSON with proper indentation and syntax highlighting.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .json-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .json-valid { border-color: #28a745; }
+        .json-invalid { border-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-code me-3"></i>JSON Formatter</h1>
+                            <p>Format and validate JSON data with proper indentation and syntax highlighting</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="jsonInput" class="form-label">Enter JSON Data *</label>
+                                    <textarea class="form-control json-editor" id="jsonInput" rows="12" placeholder="Paste your JSON data here..."></textarea>
+                                    <div class="form-text">Enter JSON data to format and validate</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="formatJSON()">
+                                        <i class="fas fa-magic me-2"></i>Format JSON
+                                    </button>
+                                    <button class="btn btn-success" onclick="minifyJSON()">
+                                        <i class="fas fa-compress me-2"></i>Minify
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearJSON()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="indentSize" class="form-label">Indent Size</label>
+                                    <select class="form-select" id="indentSize">
+                                        <option value="2" selected>2 spaces</option>
+                                        <option value="4">4 spaces</option>
+                                        <option value="8">8 spaces</option>
+                                        <option value="tab">Tab</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="jsonOutput" class="form-label">Formatted JSON</label>
+                                    <textarea class="form-control json-editor" id="jsonOutput" rows="12" readonly placeholder="Formatted JSON will appear here..."></textarea>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary" onclick="copyJSON()">
+                                        <i class="fas fa-copy me-2"></i>Copy JSON
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadJSON()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info" id="jsonStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use JSON Formatter</h4>
+                            <ol>
+                                <li>Paste your JSON data into the input area</li>
+                                <li>Choose your preferred indent size</li>
+                                <li>Click "Format JSON" to beautify the code</li>
+                                <li>Copy or download the formatted JSON</li>
+                            </ol>
+
+                            <h5 class="mt-4">JSON Formatting Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Formatting Options</h6>
+                                    <ul>
+                                        <li>Proper indentation with customizable spacing</li>
+                                        <li>Syntax validation and error highlighting</li>
+                                        <li>Minify JSON to reduce file size</li>
+                                        <li>Copy and download formatted JSON</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Validation Features</h6>
+                                    <ul>
+                                        <li>Real-time JSON validation</li>
+                                        <li>Error detection and reporting</li>
+                                        <li>Syntax highlighting for better readability</li>
+                                        <li>Support for nested objects and arrays</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeJSONFormatter();
+        });
+
+        function initializeJSONFormatter() {
+            const jsonInput = document.getElementById('jsonInput');
+            
+            // Real-time validation
+            jsonInput.addEventListener('input', validateJSON);
+        }
+
+        function validateJSON() {
+            const jsonInput = document.getElementById('jsonInput');
+            const jsonStatus = document.getElementById('jsonStatus');
+            const statusText = document.getElementById('statusText');
+            
+            const text = jsonInput.value.trim();
+            
+            if (!text) {
+                jsonStatus.style.display = 'none';
+                jsonInput.classList.remove('json-valid', 'json-invalid');
+                return;
+            }
+
+            try {
+                JSON.parse(text);
+                jsonInput.classList.remove('json-invalid');
+                jsonInput.classList.add('json-valid');
+                jsonStatus.className = 'alert alert-success';
+                jsonStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i>Valid JSON';
+            } catch (error) {
+                jsonInput.classList.remove('json-valid');
+                jsonInput.classList.add('json-invalid');
+                jsonStatus.className = 'alert alert-danger';
+                jsonStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Invalid JSON: ' + error.message;
+            }
+        }
+
+        function formatJSON() {
+            const jsonInput = document.getElementById('jsonInput');
+            const jsonOutput = document.getElementById('jsonOutput');
+            const indentSize = document.getElementById('indentSize').value;
+            
+            const text = jsonInput.value.trim();
+            
+            if (!text) {
+                showNotification('Please enter JSON data to format', 'warning');
+                return;
+            }
+
+            try {
+                const jsonData = JSON.parse(text);
+                let indent = '  ';
+                
+                if (indentSize === 'tab') {
+                    indent = '\t';
+                } else {
+                    indent = ' '.repeat(parseInt(indentSize));
+                }
+                
+                const formatted = JSON.stringify(jsonData, null, indent);
+                jsonOutput.value = formatted;
+                
+                showNotification('JSON formatted successfully', 'success');
+            } catch (error) {
+                showNotification('Error formatting JSON: ' + error.message, 'error');
+                jsonOutput.value = '';
+            }
+        }
+
+        function minifyJSON() {
+            const jsonInput = document.getElementById('jsonInput');
+            const jsonOutput = document.getElementById('jsonOutput');
+            
+            const text = jsonInput.value.trim();
+            
+            if (!text) {
+                showNotification('Please enter JSON data to minify', 'warning');
+                return;
+            }
+
+            try {
+                const jsonData = JSON.parse(text);
+                const minified = JSON.stringify(jsonData);
+                jsonOutput.value = minified;
+                
+                showNotification('JSON minified successfully', 'success');
+            } catch (error) {
+                showNotification('Error minifying JSON: ' + error.message, 'error');
+                jsonOutput.value = '';
+            }
+        }
+
+        function clearJSON() {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('jsonOutput').value = '';
+            document.getElementById('jsonStatus').style.display = 'none';
+            document.getElementById('jsonInput').classList.remove('json-valid', 'json-invalid');
+        }
+
+        function copyJSON() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            const text = jsonOutput.value;
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('JSON copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy JSON', 'error');
+                });
+            } else {
+                showNotification('No JSON to copy', 'warning');
+            }
+        }
+
+        function downloadJSON() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            const text = jsonOutput.value;
+            
+            if (text.trim()) {
+                const blob = new Blob([text], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'formatted.json';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('JSON file downloaded', 'success');
+            } else {
+                showNotification('No JSON to download', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Text Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Generate random text, Lorem Ipsum, and placeholder content for testing and development.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-random me-3"></i>Random Text Generator</h1>
+                            <p>Generate random text, Lorem Ipsum, and placeholder content</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="textType" class="form-label">Text Type</label>
+                                    <select class="form-select" id="textType">
+                                        <option value="lorem">Lorem Ipsum</option>
+                                        <option value="random">Random Words</option>
+                                        <option value="sentences">Random Sentences</option>
+                                        <option value="paragraphs">Random Paragraphs</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="textLength" class="form-label">Length</label>
+                                    <input type="number" class="form-control" id="textLength" min="1" max="1000" value="100">
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary" onclick="generateRandomText()">
+                                        <i class="fas fa-random me-2"></i>Generate Text
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="generatedText" class="form-label">Generated Text</label>
+                                    <textarea class="form-control" id="generatedText" rows="8" readonly placeholder="Generated text will appear here..."></textarea>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-success" onclick="copyGeneratedText()">
+                                        <i class="fas fa-copy me-2"></i>Copy Text
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        const loremWords = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua', 'enim', 'ad', 'minim', 'veniam', 'quis', 'nostrud', 'exercitation', 'ullamco', 'laboris', 'nisi', 'aliquip', 'ex', 'ea', 'commodo', 'consequat', 'duis', 'aute', 'irure', 'in', 'reprehenderit', 'voluptate', 'velit', 'esse', 'cillum', 'fugiat', 'nulla', 'pariatur', 'excepteur', 'sint', 'occaecat', 'cupidatat', 'non', 'proident', 'sunt', 'culpa', 'qui', 'officia', 'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum'];
+
+        function generateRandomText() {
+            const textType = document.getElementById('textType').value;
+            const length = parseInt(document.getElementById('textLength').value);
+            const generatedText = document.getElementById('generatedText');
+
+            let text = '';
+            switch (textType) {
+                case 'lorem':
+                    text = generateLoremIpsum(length);
+                    break;
+                case 'random':
+                    text = generateRandomWords(length);
+                    break;
+                case 'sentences':
+                    text = generateRandomSentences(length);
+                    break;
+                case 'paragraphs':
+                    text = generateRandomParagraphs(length);
+                    break;
+            }
+
+            generatedText.value = text;
+        }
+
+        function generateLoremIpsum(wordCount) {
+            let text = '';
+            for (let i = 0; i < wordCount; i++) {
+                text += loremWords[i % loremWords.length];
+                if (i < wordCount - 1) text += ' ';
+            }
+            return text;
+        }
+
+        function generateRandomWords(wordCount) {
+            const words = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape', 'honeydew', 'kiwi', 'lemon', 'mango', 'orange', 'papaya', 'quince', 'raspberry', 'strawberry', 'tangerine', 'watermelon'];
+            let text = '';
+            for (let i = 0; i < wordCount; i++) {
+                text += words[Math.floor(Math.random() * words.length)];
+                if (i < wordCount - 1) text += ' ';
+            }
+            return text;
+        }
+
+        function generateRandomSentences(sentenceCount) {
+            const sentences = [
+                'The quick brown fox jumps over the lazy dog.',
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                'Ut enim ad minim veniam, quis nostrud exercitation ullamco.',
+                'Duis aute irure dolor in reprehenderit in voluptate velit esse.',
+                'Excepteur sint occaecat cupidatat non proident, sunt in culpa.',
+                'Qui officia deserunt mollit anim id est laborum.',
+                'Sed ut perspiciatis unde omnis iste natus error sit voluptatem.'
+            ];
+            
+            let text = '';
+            for (let i = 0; i < sentenceCount; i++) {
+                text += sentences[Math.floor(Math.random() * sentences.length)];
+                if (i < sentenceCount - 1) text += ' ';
+            }
+            return text;
+        }
+
+        function generateRandomParagraphs(paragraphCount) {
+            let text = '';
+            for (let i = 0; i < paragraphCount; i++) {
+                text += generateLoremIpsum(50) + '\n\n';
+            }
+            return text.trim();
+        }
+
+        function copyGeneratedText() {
+            const text = document.getElementById('generatedText').value;
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Generated text copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy text', 'error');
+                });
+            } else {
+                showNotification('No text to copy', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

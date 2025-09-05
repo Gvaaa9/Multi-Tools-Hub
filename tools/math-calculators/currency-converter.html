@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Convert currencies online for free. Get real-time exchange rates and convert between different currencies.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .conversion-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .conversion-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .exchange-rate {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .rate-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .rate-item:last-child {
+            border-bottom: none;
+        }
+        .currency-flag {
+            width: 24px;
+            height: 16px;
+            margin-right: 0.5rem;
+            border-radius: 2px;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-exchange-alt me-3"></i>Currency Converter</h1>
+                            <p>Convert currencies with real-time exchange rates</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="amount" class="form-label">Amount *</label>
+                                    <input type="number" class="form-control" id="amount" placeholder="Enter amount" step="0.01">
+                                    <div class="form-text">Enter the amount to convert</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fromCurrency" class="form-label">From Currency *</label>
+                                    <select class="form-select" id="fromCurrency">
+                                        <option value="USD">🇺🇸 USD - US Dollar</option>
+                                        <option value="EUR">🇪🇺 EUR - Euro</option>
+                                        <option value="GBP">🇬🇧 GBP - British Pound</option>
+                                        <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                                        <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                                        <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                                        <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                                        <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                                        <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                                        <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="toCurrency" class="form-label">To Currency *</label>
+                                    <select class="form-select" id="toCurrency">
+                                        <option value="EUR">🇪🇺 EUR - Euro</option>
+                                        <option value="USD">🇺🇸 USD - US Dollar</option>
+                                        <option value="GBP">🇬🇧 GBP - British Pound</option>
+                                        <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                                        <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                                        <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                                        <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                                        <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                                        <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                                        <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="convertCurrency()">
+                                        <i class="fas fa-exchange-alt me-2"></i>Convert
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="swapCurrencies()">
+                                        <i class="fas fa-arrows-alt-h me-2"></i>Swap
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearCurrency()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="currencyOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showRates" checked>
+                                        <label class="form-check-label" for="showRates">
+                                            Show exchange rates
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show conversion history
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="conversionResults" style="display: none;">
+                                    <div class="conversion-result">
+                                        <h2 class="mb-4">Conversion Result</h2>
+                                        <div class="conversion-value" id="convertedAmount">$0.00</div>
+                                        <div class="mt-3">
+                                            <small>Exchange Rate: <span id="exchangeRate">1.0000</span></small><br>
+                                            <small>Last Updated: <span id="lastUpdated">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="exchange-rate" id="ratesInfo" style="display: none;">
+                                        <h5>Exchange Rate Information</h5>
+                                        <div class="rate-item">
+                                            <span>1 <span id="fromCurrencyRate">USD</span> =</span>
+                                            <span><span id="rateValue">1.0000</span> <span id="toCurrencyRate">EUR</span></span>
+                                        </div>
+                                        <div class="rate-item">
+                                            <span>1 <span id="toCurrencyRate2">EUR</span> =</span>
+                                            <span><span id="inverseRate">1.0000</span> <span id="fromCurrencyRate2">USD</span></span>
+                                        </div>
+                                        <div class="rate-item">
+                                            <span>Rate Source:</span>
+                                            <span>Mock Exchange API</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="exchange-rate" id="conversionHistory" style="display: none;">
+                                        <h5>Recent Conversions</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="conversionStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Currency Converter</h4>
+                            <ol>
+                                <li>Enter the amount you want to convert</li>
+                                <li>Select the source currency</li>
+                                <li>Select the target currency</li>
+                                <li>Click "Convert" to get the result</li>
+                                <li>Use "Swap" to reverse the conversion</li>
+                            </ol>
+
+                            <h5 class="mt-4">Supported Currencies</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Major Currencies</h6>
+                                    <ul>
+                                        <li>USD - US Dollar</li>
+                                        <li>EUR - Euro</li>
+                                        <li>GBP - British Pound</li>
+                                        <li>JPY - Japanese Yen</li>
+                                        <li>CAD - Canadian Dollar</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Other Currencies</h6>
+                                    <ul>
+                                        <li>AUD - Australian Dollar</li>
+                                        <li>CHF - Swiss Franc</li>
+                                        <li>CNY - Chinese Yuan</li>
+                                        <li>INR - Indian Rupee</li>
+                                        <li>BRL - Brazilian Real</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCurrencyConverter();
+        });
+
+        let conversionHistory = [];
+        let exchangeRates = {};
+
+        function initializeCurrencyConverter() {
+            // Load mock exchange rates
+            loadExchangeRates();
+        }
+
+        function loadExchangeRates() {
+            // Mock exchange rates (in real implementation, fetch from API)
+            exchangeRates = {
+                'USD': 1.0,
+                'EUR': 0.85,
+                'GBP': 0.73,
+                'JPY': 110.0,
+                'CAD': 1.25,
+                'AUD': 1.35,
+                'CHF': 0.92,
+                'CNY': 6.45,
+                'INR': 75.0,
+                'BRL': 5.2
+            };
+        }
+
+        function convertCurrency() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+            
+            if (isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount', 'warning');
+                return;
+            }
+            
+            if (fromCurrency === toCurrency) {
+                showNotification('Please select different currencies', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            showLoadingState();
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                const result = performConversion(amount, fromCurrency, toCurrency);
+                displayConversionResults(result);
+                addToHistory(result);
+                showNotification('Currency converted successfully', 'success');
+            }, 1000);
+        }
+
+        function performConversion(amount, fromCurrency, toCurrency) {
+            const fromRate = exchangeRates[fromCurrency];
+            const toRate = exchangeRates[toCurrency];
+            
+            // Convert to USD first, then to target currency
+            const usdAmount = amount / fromRate;
+            const convertedAmount = usdAmount * toRate;
+            const exchangeRate = toRate / fromRate;
+            const inverseRate = fromRate / toRate;
+            
+            return {
+                amount,
+                fromCurrency,
+                toCurrency,
+                convertedAmount,
+                exchangeRate,
+                inverseRate,
+                timestamp: new Date().toLocaleString()
+            };
+        }
+
+        function displayConversionResults(result) {
+            // Update main result
+            document.getElementById('convertedAmount').textContent = 
+                formatCurrency(result.convertedAmount, result.toCurrency);
+            document.getElementById('exchangeRate').textContent = result.exchangeRate.toFixed(4);
+            document.getElementById('lastUpdated').textContent = result.timestamp;
+            
+            // Update exchange rate info
+            if (document.getElementById('showRates').checked) {
+                document.getElementById('fromCurrencyRate').textContent = result.fromCurrency;
+                document.getElementById('toCurrencyRate').textContent = result.toCurrency;
+                document.getElementById('rateValue').textContent = result.exchangeRate.toFixed(4);
+                document.getElementById('toCurrencyRate2').textContent = result.toCurrency;
+                document.getElementById('inverseRate').textContent = result.inverseRate.toFixed(4);
+                document.getElementById('fromCurrencyRate2').textContent = result.fromCurrency;
+                document.getElementById('ratesInfo').style.display = 'block';
+            } else {
+                document.getElementById('ratesInfo').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateHistoryDisplay();
+                document.getElementById('conversionHistory').style.display = 'block';
+            } else {
+                document.getElementById('conversionHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('conversionResults').style.display = 'block';
+        }
+
+        function formatCurrency(amount, currency) {
+            const symbols = {
+                'USD': '$',
+                'EUR': '€',
+                'GBP': '£',
+                'JPY': '¥',
+                'CAD': 'C$',
+                'AUD': 'A$',
+                'CHF': 'CHF',
+                'CNY': '¥',
+                'INR': '₹',
+                'BRL': 'R$'
+            };
+            
+            const symbol = symbols[currency] || currency;
+            return symbol + amount.toFixed(2);
+        }
+
+        function addToHistory(result) {
+            conversionHistory.unshift(result);
+            if (conversionHistory.length > 10) {
+                conversionHistory.pop();
+            }
+        }
+
+        function updateHistoryDisplay() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = conversionHistory.map(item => 
+                `<div class="rate-item">
+                    <span>${formatCurrency(item.amount, item.fromCurrency)} → ${formatCurrency(item.convertedAmount, item.toCurrency)}</span>
+                    <small class="text-muted">${item.timestamp}</small>
+                </div>`
+            ).join('');
+        }
+
+        function showLoadingState() {
+            const status = document.getElementById('conversionStatus');
+            status.className = 'alert alert-info';
+            status.style.display = 'block';
+            status.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Converting currency...';
+        }
+
+        function swapCurrencies() {
+            const fromCurrency = document.getElementById('fromCurrency');
+            const toCurrency = document.getElementById('toCurrency');
+            
+            const temp = fromCurrency.value;
+            fromCurrency.value = toCurrency.value;
+            toCurrency.value = temp;
+            
+            showNotification('Currencies swapped', 'info');
+        }
+
+        function clearCurrency() {
+            document.getElementById('amount').value = '';
+            document.getElementById('conversionResults').style.display = 'none';
+            document.getElementById('conversionStatus').style.display = 'none';
+            
+            showNotification('Currency converter cleared', 'info');
+        }
+    </script>
+</body>
+</html>

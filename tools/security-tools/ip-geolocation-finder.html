@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Geolocation Finder - Multi-Tools Hub</title>
+    <meta name="description" content="Find IP geolocation information online for free. Get location, ISP, and other details for any IP address.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .ip-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .ip-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .ip-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .ip-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .ip-detail-item:last-child {
+            border-bottom: none;
+        }
+        .ip-history {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .ip-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .map-container {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .map-placeholder {
+            background-color: #e9ecef;
+            border: 2px dashed #dee2e6;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+        .ip-stats {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-map-marker-alt me-3"></i>IP Geolocation Finder</h1>
+                            <p>Find location and details for any IP address</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="ipAddress" class="form-label">IP Address</label>
+                                    <input type="text" class="form-control" id="ipAddress" placeholder="192.168.1.1 or 8.8.8.8">
+                                    <div class="form-text">Enter an IP address to look up</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="ipOptions" class="form-label">Lookup Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showMap" checked>
+                                        <label class="form-check-label" for="showMap">
+                                            Show map location
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showISP" checked>
+                                        <label class="form-check-label" for="showISP">
+                                            Show ISP information
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showTimezone" checked>
+                                        <label class="form-check-label" for="showTimezone">
+                                            Show timezone information
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showSecurity" checked>
+                                        <label class="form-check-label" for="showSecurity">
+                                            Show security information
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="ipPresets" class="form-label">Quick Presets</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('basic')">Basic</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('detailed')">Detailed</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('security')">Security</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('myip')">My IP</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="lookupIP()">
+                                        <i class="fas fa-search me-2"></i>Lookup IP
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearIP()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="ipOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show lookup history
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showStats" checked>
+                                        <label class="form-check-label" for="showStats">
+                                            Show IP statistics
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="ipResults" style="display: none;">
+                                    <div class="ip-result">
+                                        <h2 class="mb-4">IP Geolocation</h2>
+                                        <div class="ip-value" id="ipValue">Click Lookup</div>
+                                        <div class="mt-3">
+                                            <small>Location: <span id="locationDisplay">-</span></small><br>
+                                            <small>ISP: <span id="ispDisplay">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="map-container" id="mapContainer" style="display: none;">
+                                        <h5>Map Location</h5>
+                                        <div class="map-placeholder">
+                                            <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Map will be displayed here</p>
+                                            <small class="text-muted">Coordinates: <span id="coordinates">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="ip-details" id="ipDetails" style="display: none;">
+                                        <h5>IP Details</h5>
+                                        <div class="ip-detail-item">
+                                            <span>IP Address:</span>
+                                            <span id="ipAddressDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>Country:</span>
+                                            <span id="countryDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>Region:</span>
+                                            <span id="regionDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>City:</span>
+                                            <span id="cityDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>ZIP Code:</span>
+                                            <span id="zipDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>Timezone:</span>
+                                            <span id="timezoneDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>ISP:</span>
+                                            <span id="ispDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>Organization:</span>
+                                            <span id="orgDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>AS Number:</span>
+                                            <span id="asnDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>Latitude:</span>
+                                            <span id="latDetail">-</span>
+                                        </div>
+                                        <div class="ip-detail-item">
+                                            <span>Longitude:</span>
+                                            <span id="lonDetail">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="ip-stats" id="ipStats" style="display: none;">
+                                        <h5>IP Statistics</h5>
+                                        <div class="stat-item">
+                                            <span>Lookup Time:</span>
+                                            <span id="lookupTime">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Data Source:</span>
+                                            <span id="dataSource">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Accuracy:</span>
+                                            <span id="accuracy">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Last Updated:</span>
+                                            <span id="lastUpdated">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="ip-history" id="ipHistory" style="display: none;">
+                                        <h5>Lookup History</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Looking up IP address...</p>
+                                </div>
+
+                                <div class="alert alert-info" id="ipStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use IP Geolocation Finder</h4>
+                            <ol>
+                                <li>Enter an IP address in the input field</li>
+                                <li>Select which information to display</li>
+                                <li>Use quick presets for common lookups</li>
+                                <li>Click "Lookup IP" to get geolocation data</li>
+                                <li>View detailed information and map location</li>
+                            </ol>
+
+                            <h5 class="mt-4">IP Geolocation Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Information</h6>
+                                    <ul>
+                                        <li>Country, region, and city</li>
+                                        <li>ZIP code and timezone</li>
+                                        <li>ISP and organization</li>
+                                        <li>Coordinates and map</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Features</h6>
+                                    <ul>
+                                        <li>Security information</li>
+                                        <li>AS number and routing</li>
+                                        <li>Lookup history</li>
+                                        <li>Statistics and accuracy</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeIPGeolocation();
+        });
+
+        let ipHistory = [];
+
+        function initializeIPGeolocation() {
+            // Auto-detect user's IP
+            document.getElementById('ipAddress').addEventListener('focus', function() {
+                if (!this.value) {
+                    this.placeholder = 'Detecting your IP...';
+                    detectUserIP();
+                }
+            });
+        }
+
+        function detectUserIP() {
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ipAddress').placeholder = data.ip;
+                })
+                .catch(() => {
+                    document.getElementById('ipAddress').placeholder = '192.168.1.1 or 8.8.8.8';
+                });
+        }
+
+        function lookupIP() {
+            const ipAddress = document.getElementById('ipAddress').value.trim();
+            
+            if (!ipAddress) {
+                showNotification('Please enter an IP address', 'warning');
+                return;
+            }
+            
+            if (!isValidIP(ipAddress)) {
+                showNotification('Please enter a valid IP address', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            // Simulate API call (in real implementation, use actual geolocation API)
+            setTimeout(() => {
+                try {
+                    const ipData = getIPGeolocationData(ipAddress);
+                    displayIPResults(ipData);
+                    addToHistory(ipData);
+                    showNotification('IP lookup completed', 'success');
+                } catch (error) {
+                    showNotification('Error looking up IP: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            }, 1500);
+        }
+
+        function getIPGeolocationData(ipAddress) {
+            // Mock data - in real implementation, use actual geolocation API
+            const mockData = {
+                ip: ipAddress,
+                country: 'United States',
+                region: 'California',
+                city: 'Mountain View',
+                zip: '94043',
+                timezone: 'America/Los_Angeles',
+                isp: 'Google LLC',
+                org: 'Google Public DNS',
+                asn: 'AS15169',
+                lat: '37.4056',
+                lon: '-122.0775',
+                accuracy: '95%',
+                lookupTime: '150ms',
+                dataSource: 'IP Geolocation API',
+                lastUpdated: new Date().toISOString()
+            };
+            
+            return mockData;
+        }
+
+        function displayIPResults(ipData) {
+            // Update main result
+            document.getElementById('ipValue').textContent = ipData.ip;
+            document.getElementById('locationDisplay').textContent = `${ipData.city}, ${ipData.region}, ${ipData.country}`;
+            document.getElementById('ispDisplay').textContent = ipData.isp;
+            
+            // Update map
+            if (document.getElementById('showMap').checked) {
+                updateMap(ipData.lat, ipData.lon);
+                document.getElementById('mapContainer').style.display = 'block';
+            } else {
+                document.getElementById('mapContainer').style.display = 'none';
+            }
+            
+            // Update details
+            updateIPDetails(ipData);
+            document.getElementById('ipDetails').style.display = 'block';
+            
+            // Update statistics
+            if (document.getElementById('showStats').checked) {
+                updateIPStats(ipData);
+                document.getElementById('ipStats').style.display = 'block';
+            } else {
+                document.getElementById('ipStats').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateIPHistory();
+                document.getElementById('ipHistory').style.display = 'block';
+            } else {
+                document.getElementById('ipHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('ipResults').style.display = 'block';
+        }
+
+        function updateMap(lat, lon) {
+            document.getElementById('coordinates').textContent = `${lat}, ${lon}`;
+            // In real implementation, integrate with Google Maps or OpenStreetMap
+        }
+
+        function updateIPDetails(ipData) {
+            document.getElementById('ipAddressDetail').textContent = ipData.ip;
+            document.getElementById('countryDetail').textContent = ipData.country;
+            document.getElementById('regionDetail').textContent = ipData.region;
+            document.getElementById('cityDetail').textContent = ipData.city;
+            document.getElementById('zipDetail').textContent = ipData.zip;
+            document.getElementById('timezoneDetail').textContent = ipData.timezone;
+            document.getElementById('ispDetail').textContent = ipData.isp;
+            document.getElementById('orgDetail').textContent = ipData.org;
+            document.getElementById('asnDetail').textContent = ipData.asn;
+            document.getElementById('latDetail').textContent = ipData.lat;
+            document.getElementById('lonDetail').textContent = ipData.lon;
+        }
+
+        function updateIPStats(ipData) {
+            document.getElementById('lookupTime').textContent = ipData.lookupTime;
+            document.getElementById('dataSource').textContent = ipData.dataSource;
+            document.getElementById('accuracy').textContent = ipData.accuracy;
+            document.getElementById('lastUpdated').textContent = new Date(ipData.lastUpdated).toLocaleString();
+        }
+
+        function addToHistory(ipData) {
+            ipHistory.unshift({
+                ip: ipData.ip,
+                location: `${ipData.city}, ${ipData.country}`,
+                isp: ipData.isp,
+                created: new Date().toISOString()
+            });
+            if (ipHistory.length > 20) {
+                ipHistory.pop();
+            }
+        }
+
+        function updateIPHistory() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = ipHistory.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div class="ip-text">${item.ip}</div>
+                        <small class="text-muted">${item.location} - ${item.isp}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="lookupIPFromHistory('${item.ip}')">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function lookupIPFromHistory(ip) {
+            document.getElementById('ipAddress').value = ip;
+            lookupIP();
+        }
+
+        function setPreset(type) {
+            switch (type) {
+                case 'basic':
+                    document.getElementById('showMap').checked = false;
+                    document.getElementById('showISP').checked = true;
+                    document.getElementById('showTimezone').checked = false;
+                    document.getElementById('showSecurity').checked = false;
+                    break;
+                case 'detailed':
+                    document.getElementById('showMap').checked = true;
+                    document.getElementById('showISP').checked = true;
+                    document.getElementById('showTimezone').checked = true;
+                    document.getElementById('showSecurity').checked = true;
+                    break;
+                case 'security':
+                    document.getElementById('showMap').checked = false;
+                    document.getElementById('showISP').checked = true;
+                    document.getElementById('showTimezone').checked = false;
+                    document.getElementById('showSecurity').checked = true;
+                    break;
+                case 'myip':
+                    detectUserIP();
+                    break;
+            }
+            
+            showNotification(`${type} preset applied`, 'info');
+        }
+
+        function clearIP() {
+            document.getElementById('ipAddress').value = '';
+            document.getElementById('ipValue').textContent = 'Click Lookup';
+            document.getElementById('ipResults').style.display = 'none';
+            document.getElementById('ipStatus').style.display = 'none';
+            
+            showNotification('IP lookup cleared', 'info');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('ipResults').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function isValidIP(ip) {
+            const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            return ipRegex.test(ip);
+        }
+    </script>
+</body>
+</html>

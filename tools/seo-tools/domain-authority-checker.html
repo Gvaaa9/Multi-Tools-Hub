@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Authority Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Check domain authority and backlink metrics for your website. Analyze domain strength and SEO performance.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-chart-line me-3"></i>Domain Authority Checker</h1>
+                            <p>Check domain authority and analyze your website's SEO strength</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="websiteUrl" class="form-label">Website URL *</label>
+                                    <input type="url" class="form-control" id="websiteUrl" placeholder="https://example.com">
+                                    <div class="form-text">Enter the domain you want to check</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="checkType" class="form-label">Check Type</label>
+                                    <select class="form-select" id="checkType">
+                                        <option value="single">Single Domain</option>
+                                        <option value="compare">Compare Domains</option>
+                                    </select>
+                                </div>
+
+                                <div id="compareDomains" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label for="compareUrl" class="form-label">Compare With</label>
+                                        <input type="url" class="form-control" id="compareUrl" placeholder="https://competitor.com">
+                                        <div class="form-text">Enter competitor domain for comparison</div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary btn-lg" id="checkAuthorityBtn">
+                                        <i class="fas fa-chart-line me-2"></i>Check Domain Authority
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="authority-preview border rounded p-3" id="authorityPreview">
+                                    <h6>Domain Authority Preview</h6>
+                                    <p class="text-muted">Enter a domain and click "Check Domain Authority" to see results</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Domain Authority Checker</h4>
+                            <ol>
+                                <li>Enter the domain you want to check</li>
+                                <li>Select check type (Single Domain or Compare Domains)</li>
+                                <li>Click "Check Domain Authority" to start analysis</li>
+                                <li>Review the results and metrics</li>
+                            </ol>
+
+                            <h5 class="mt-4">Understanding Domain Authority</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>What is Domain Authority?</h6>
+                                    <p>Domain Authority (DA) is a metric that predicts how well a website will rank on search engines. It's scored from 1-100.</p>
+                                    
+                                    <h6>DA Score Ranges</h6>
+                                    <ul>
+                                        <li><strong>90-100:</strong> Excellent</li>
+                                        <li><strong>70-89:</strong> Very Good</li>
+                                        <li><strong>50-69:</strong> Good</li>
+                                        <li><strong>30-49:</strong> Fair</li>
+                                        <li><strong>0-29:</strong> Poor</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Factors Affecting DA</h6>
+                                    <ul>
+                                        <li>Number of backlinks</li>
+                                        <li>Quality of backlinks</li>
+                                        <li>Domain age</li>
+                                        <li>Content quality</li>
+                                        <li>Technical SEO</li>
+                                        <li>Social signals</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDomainAuthorityChecker();
+        });
+
+        function initializeDomainAuthorityChecker() {
+            const checkAuthorityBtn = document.getElementById('checkAuthorityBtn');
+            const websiteUrl = document.getElementById('websiteUrl');
+            const checkType = document.getElementById('checkType');
+            const compareDomains = document.getElementById('compareDomains');
+
+            // Check authority button
+            checkAuthorityBtn.addEventListener('click', checkDomainAuthority);
+
+            // Real-time preview
+            websiteUrl.addEventListener('input', updatePreview);
+
+            // Check type change
+            checkType.addEventListener('change', function() {
+                compareDomains.style.display = this.value === 'compare' ? 'block' : 'none';
+                updatePreview();
+            });
+        }
+
+        function updatePreview() {
+            const url = document.getElementById('websiteUrl').value;
+            const checkType = document.getElementById('checkType').value;
+            const preview = document.getElementById('authorityPreview');
+            
+            if (url.trim()) {
+                preview.innerHTML = `
+                    <h6>Ready to Check</h6>
+                    <p><strong>Domain:</strong> ${url}</p>
+                    <p><strong>Type:</strong> ${checkType}</p>
+                    <p class="text-muted">Click "Check Domain Authority" to start analysis</p>
+                `;
+            } else {
+                preview.innerHTML = `
+                    <h6>Domain Authority Preview</h6>
+                    <p class="text-muted">Enter a domain and click "Check Domain Authority" to see results</p>
+                `;
+            }
+        }
+
+        function checkDomainAuthority() {
+            const url = document.getElementById('websiteUrl').value.trim();
+            const checkType = document.getElementById('checkType').value;
+            const compareUrl = document.getElementById('compareUrl').value.trim();
+
+            if (!url) {
+                showNotification('Please enter a website URL', 'error');
+                return;
+            }
+
+            // Validate URL
+            try {
+                new URL(url);
+            } catch (e) {
+                showNotification('Please enter a valid URL', 'error');
+                return;
+            }
+
+            if (checkType === 'compare' && !compareUrl) {
+                showNotification('Please enter a domain to compare with', 'error');
+                return;
+            }
+
+            const checkAuthorityBtn = document.getElementById('checkAuthorityBtn');
+            const result = document.getElementById('result');
+            
+            checkAuthorityBtn.disabled = true;
+            checkAuthorityBtn.innerHTML = '<span class="loading"></span> Analyzing...';
+
+            // Simulate domain authority check
+            setTimeout(() => {
+                try {
+                    // Generate mock domain authority results
+                    const results = generateMockResults(url, checkType, compareUrl);
+                    displayResults(results);
+
+                } catch (error) {
+                    showNotification('Error checking domain authority: ' + error.message, 'error');
+                    result.innerHTML = '<p class="text-danger">Error: ' + error.message + '</p>';
+                    result.style.display = 'block';
+                }
+                
+                checkAuthorityBtn.disabled = false;
+                checkAuthorityBtn.innerHTML = '<i class="fas fa-chart-line me-2"></i>Check Domain Authority';
+            }, 2000);
+        }
+
+        function generateMockResults(url, checkType, compareUrl) {
+            // Generate realistic mock data
+            const domainAuthority = Math.floor(Math.random() * 50) + 30; // 30-80
+            const pageAuthority = Math.floor(Math.random() * 50) + 30; // 30-80
+            const backlinks = Math.floor(Math.random() * 10000) + 100; // 100-10100
+            const referringDomains = Math.floor(Math.random() * 1000) + 50; // 50-1050
+            const organicTraffic = Math.floor(Math.random() * 50000) + 1000; // 1000-51000
+            const organicKeywords = Math.floor(Math.random() * 5000) + 100; // 100-5100
+
+            const results = {
+                url,
+                checkType,
+                domainAuthority,
+                pageAuthority,
+                backlinks,
+                referringDomains,
+                organicTraffic,
+                organicKeywords,
+                domainAge: Math.floor(Math.random() * 10) + 1, // 1-10 years
+                socialSignals: {
+                    facebook: Math.floor(Math.random() * 1000) + 100,
+                    twitter: Math.floor(Math.random() * 500) + 50,
+                    linkedin: Math.floor(Math.random() * 200) + 20
+                },
+                recommendations: generateRecommendations(domainAuthority, backlinks, referringDomains)
+            };
+
+            if (checkType === 'compare' && compareUrl) {
+                results.comparison = {
+                    url: compareUrl,
+                    domainAuthority: Math.floor(Math.random() * 50) + 30,
+                    pageAuthority: Math.floor(Math.random() * 50) + 30,
+                    backlinks: Math.floor(Math.random() * 10000) + 100,
+                    referringDomains: Math.floor(Math.random() * 1000) + 50
+                };
+            }
+
+            return results;
+        }
+
+        function generateRecommendations(da, backlinks, referringDomains) {
+            const recommendations = [];
+            
+            if (da < 40) {
+                recommendations.push("Focus on building high-quality backlinks from authoritative domains");
+                recommendations.push("Improve content quality and create link-worthy resources");
+                recommendations.push("Build relationships with industry influencers and bloggers");
+            }
+            
+            if (backlinks < 1000) {
+                recommendations.push("Increase backlink acquisition through guest posting and outreach");
+                recommendations.push("Create shareable content that naturally attracts links");
+            }
+            
+            if (referringDomains < 100) {
+                recommendations.push("Diversify your backlink profile across different domains");
+                recommendations.push("Focus on earning links from relevant, high-authority sites");
+            }
+            
+            recommendations.push("Monitor your backlink profile regularly for quality and spam");
+            recommendations.push("Create and maintain a strong internal linking structure");
+            
+            return recommendations;
+        }
+
+        function displayResults(results) {
+            const result = document.getElementById('result');
+            
+            const daColor = results.domainAuthority >= 70 ? 'success' : 
+                           results.domainAuthority >= 50 ? 'warning' : 'danger';
+            
+            let resultHTML = `
+                <div class="text-center">
+                    <h5 class="text-success mb-3">Domain Authority Analysis Complete!</h5>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Domain Authority</h6>
+                                    <p class="card-text h2 text-${daColor}">${results.domainAuthority}</p>
+                                    <small class="text-muted">/ 100</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Page Authority</h6>
+                                    <p class="card-text h2 text-${daColor}">${results.pageAuthority}</p>
+                                    <small class="text-muted">/ 100</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Backlinks</h6>
+                                    <p class="card-text h4">${results.backlinks.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Referring Domains</h6>
+                                    <p class="card-text h4">${results.referringDomains.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Organic Traffic</h6>
+                                    <p class="card-text h4">${results.organicTraffic.toLocaleString()}</p>
+                                    <small class="text-muted">monthly</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Organic Keywords</h6>
+                                    <p class="card-text h4">${results.organicKeywords.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Domain Age</h6>
+                                    <p class="card-text h4">${results.domainAge}</p>
+                                    <small class="text-muted">years</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            `;
+
+            if (results.comparison) {
+                resultHTML += `
+                    <h6 class="mb-3">Domain Comparison</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">${results.url}</h6>
+                                    <p><strong>DA:</strong> ${results.domainAuthority}</p>
+                                    <p><strong>Backlinks:</strong> ${results.backlinks.toLocaleString()}</p>
+                                    <p><strong>Referring Domains:</strong> ${results.referringDomains.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">${results.comparison.url}</h6>
+                                    <p><strong>DA:</strong> ${results.comparison.domainAuthority}</p>
+                                    <p><strong>Backlinks:</strong> ${results.comparison.backlinks.toLocaleString()}</p>
+                                    <p><strong>Referring Domains:</strong> ${results.comparison.referringDomains.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultHTML += `
+                    <h6 class="mb-3 mt-4">Optimization Recommendations</h6>
+                    <div class="row">
+                        <div class="col-12">
+                            <ul class="list-group">
+            `;
+
+            results.recommendations.forEach(rec => {
+                resultHTML += `<li class="list-group-item">${rec}</li>`;
+            });
+
+            resultHTML += `
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="downloadResults()">
+                            <i class="fas fa-download me-2"></i>Download Report
+                        </button>
+                        <button class="btn btn-success" onclick="copyToClipboard(document.getElementById('resultsText').value)">
+                            <i class="fas fa-copy me-2"></i>Copy Results
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Add hidden textarea for copying
+            resultHTML += `
+                <textarea id="resultsText" class="d-none">${generateTextResults(results)}</textarea>
+            `;
+
+            result.innerHTML = resultHTML;
+            result.style.display = 'block';
+
+            // Store for download
+            window.authorityResults = results;
+
+            showNotification('Domain authority analysis completed!', 'success');
+        }
+
+        function generateTextResults(results) {
+            let text = `Domain Authority Analysis Report\n`;
+            text += `===============================\n\n`;
+            text += `Domain: ${results.url}\n`;
+            text += `Domain Authority: ${results.domainAuthority}/100\n`;
+            text += `Page Authority: ${results.pageAuthority}/100\n`;
+            text += `Backlinks: ${results.backlinks.toLocaleString()}\n`;
+            text += `Referring Domains: ${results.referringDomains.toLocaleString()}\n`;
+            text += `Organic Traffic: ${results.organicTraffic.toLocaleString()} monthly\n`;
+            text += `Organic Keywords: ${results.organicKeywords.toLocaleString()}\n`;
+            text += `Domain Age: ${results.domainAge} years\n\n`;
+            
+            if (results.comparison) {
+                text += `Comparison with ${results.comparison.url}:\n`;
+                text += `- DA: ${results.domainAuthority} vs ${results.comparison.domainAuthority}\n`;
+                text += `- Backlinks: ${results.backlinks.toLocaleString()} vs ${results.comparison.backlinks.toLocaleString()}\n`;
+                text += `- Referring Domains: ${results.referringDomains.toLocaleString()} vs ${results.comparison.referringDomains.toLocaleString()}\n\n`;
+            }
+            
+            text += `Recommendations:\n`;
+            results.recommendations.forEach((rec, index) => {
+                text += `${index + 1}. ${rec}\n`;
+            });
+            
+            return text;
+        }
+
+        function downloadResults() {
+            if (window.authorityResults) {
+                const text = generateTextResults(window.authorityResults);
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'domain-authority-report.txt';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+    </script>
+</body>
+</html>

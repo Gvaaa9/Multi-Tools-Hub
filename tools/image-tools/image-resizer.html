@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer - Multi-Tools Hub</title>
+    <meta name="description" content="Resize images online for free. Resize JPG, PNG, GIF, WebP images while maintaining quality. Perfect for social media and web use.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-expand-arrows-alt me-3"></i>Image Resizer</h1>
+                            <p>Resize images while maintaining quality and aspect ratio</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="upload-area border border-2 border-dashed rounded p-5 text-center mb-4" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h5>Upload Image</h5>
+                                    <p class="text-muted">Drag and drop your image here or click to browse</p>
+                                    <input type="file" id="imageInput" accept="image/*" class="d-none">
+                                    <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                                        Choose File
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="preview-area border rounded p-3 text-center" id="previewArea" style="display: none;">
+                                    <h6>Original Image</h6>
+                                    <img id="previewImage" class="img-fluid rounded mb-3" style="max-height: 200px;">
+                                    <div class="image-info">
+                                        <small class="text-muted" id="imageInfo"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4" id="resizeControls" style="display: none;">
+                            <div class="col-md-6">
+                                <h5>Resize Options</h5>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Resize Method</label>
+                                    <select class="form-select" id="resizeMethod">
+                                        <option value="custom">Custom Dimensions</option>
+                                        <option value="percentage">Percentage</option>
+                                        <option value="preset">Preset Sizes</option>
+                                    </select>
+                                </div>
+
+                                <div id="customDimensions">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label for="width" class="form-label">Width (px)</label>
+                                            <input type="number" class="form-control" id="width" min="1">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="height" class="form-label">Height (px)</label>
+                                            <input type="number" class="form-control" id="height" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" id="maintainAspect" checked>
+                                        <label class="form-check-label" for="maintainAspect">
+                                            Maintain Aspect Ratio
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="percentageDimensions" style="display: none;">
+                                    <label for="percentage" class="form-label">Resize Percentage</label>
+                                    <input type="range" class="form-range" id="percentage" min="10" max="500" value="100">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">10%</small>
+                                        <small class="text-muted" id="percentageValue">100%</small>
+                                        <small class="text-muted">500%</small>
+                                    </div>
+                                </div>
+
+                                <div id="presetDimensions" style="display: none;">
+                                    <label for="preset" class="form-label">Preset Size</label>
+                                    <select class="form-select" id="preset">
+                                        <option value="thumbnail">Thumbnail (150x150)</option>
+                                        <option value="small">Small (300x300)</option>
+                                        <option value="medium">Medium (600x600)</option>
+                                        <option value="large">Large (1200x1200)</option>
+                                        <option value="facebook">Facebook Post (1200x630)</option>
+                                        <option value="instagram">Instagram Square (1080x1080)</option>
+                                        <option value="instagram-story">Instagram Story (1080x1920)</option>
+                                        <option value="twitter">Twitter Post (1200x675)</option>
+                                        <option value="youtube">YouTube Thumbnail (1280x720)</option>
+                                        <option value="linkedin">LinkedIn Post (1200x627)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Preview</h5>
+                                <div class="preview-resized border rounded p-3 text-center" id="previewResized">
+                                    <img id="resizedPreview" class="img-fluid rounded" style="max-height: 200px;">
+                                    <div class="mt-2">
+                                        <small class="text-muted" id="resizedInfo">Resized image will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-4" id="resizeButtonContainer" style="display: none;">
+                            <button class="btn btn-success btn-lg" id="resizeBtn">
+                                <i class="fas fa-expand-arrows-alt me-2"></i>Resize Image
+                            </button>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Resize Images</h4>
+                            <ol>
+                                <li>Upload your image by clicking "Choose File" or dragging and dropping</li>
+                                <li>Choose your resize method: Custom dimensions, Percentage, or Preset sizes</li>
+                                <li>Adjust the settings according to your needs</li>
+                                <li>Preview the resized image in the preview area</li>
+                                <li>Click "Resize Image" to download the resized version</li>
+                            </ol>
+
+                            <h5 class="mt-4">Resize Methods</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Custom Dimensions</h6>
+                                    <p>Set exact width and height in pixels. Option to maintain aspect ratio.</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Percentage</h6>
+                                    <p>Resize by percentage (10% to 500%). Maintains original aspect ratio.</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Preset Sizes</h6>
+                                    <p>Choose from common sizes for social media and web use.</p>
+                                </div>
+                            </div>
+
+                            <h5 class="mt-4">Supported Formats</h5>
+                            <p>JPG, PNG, GIF, WebP, BMP, TIFF, and more image formats.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        let selectedFile = null;
+        let originalWidth = 0;
+        let originalHeight = 0;
+
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeImageResizer();
+        });
+
+        function initializeImageResizer() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const resizeMethod = document.getElementById('resizeMethod');
+            const percentageSlider = document.getElementById('percentage');
+            const percentageValue = document.getElementById('percentageValue');
+            const resizeBtn = document.getElementById('resizeBtn');
+
+            // File input change
+            imageInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+
+            // Resize method change
+            resizeMethod.addEventListener('change', handleResizeMethodChange);
+
+            // Percentage slider
+            percentageSlider.addEventListener('input', function() {
+                percentageValue.textContent = this.value + '%';
+                updatePreview();
+            });
+
+            // Width/Height inputs
+            document.getElementById('width').addEventListener('input', updatePreview);
+            document.getElementById('height').addEventListener('input', updatePreview);
+            document.getElementById('maintainAspect').addEventListener('change', handleAspectRatioChange);
+            document.getElementById('preset').addEventListener('change', handlePresetChange);
+
+            // Resize button
+            resizeBtn.addEventListener('click', resizeImage);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                processFile(file);
+            } else {
+                showNotification('Please select a valid image file', 'error');
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('border-primary');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('border-primary');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('border-primary');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    processFile(file);
+                } else {
+                    showNotification('Please drop a valid image file', 'error');
+                }
+            }
+        }
+
+        function processFile(file) {
+            selectedFile = file;
+            
+            const previewArea = document.getElementById('previewArea');
+            const previewImage = document.getElementById('previewImage');
+            const imageInfo = document.getElementById('imageInfo');
+            const resizeControls = document.getElementById('resizeControls');
+            const resizeButtonContainer = document.getElementById('resizeButtonContainer');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewArea.style.display = 'block';
+                resizeControls.style.display = 'block';
+                resizeButtonContainer.style.display = 'block';
+                
+                // Get original dimensions
+                const img = new Image();
+                img.onload = function() {
+                    originalWidth = img.width;
+                    originalHeight = img.height;
+                    
+                    // Set initial values
+                    document.getElementById('width').value = originalWidth;
+                    document.getElementById('height').value = originalHeight;
+                    
+                    const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                    imageInfo.textContent = `${file.name} (${originalWidth}x${originalHeight}, ${sizeInMB} MB)`;
+                    
+                    updatePreview();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleResizeMethodChange() {
+            const method = document.getElementById('resizeMethod').value;
+            const customDimensions = document.getElementById('customDimensions');
+            const percentageDimensions = document.getElementById('percentageDimensions');
+            const presetDimensions = document.getElementById('presetDimensions');
+
+            customDimensions.style.display = method === 'custom' ? 'block' : 'none';
+            percentageDimensions.style.display = method === 'percentage' ? 'block' : 'none';
+            presetDimensions.style.display = method === 'preset' ? 'block' : 'none';
+
+            updatePreview();
+        }
+
+        function handleAspectRatioChange() {
+            updatePreview();
+        }
+
+        function handlePresetChange() {
+            const preset = document.getElementById('preset').value;
+            const presets = {
+                'thumbnail': { width: 150, height: 150 },
+                'small': { width: 300, height: 300 },
+                'medium': { width: 600, height: 600 },
+                'large': { width: 1200, height: 1200 },
+                'facebook': { width: 1200, height: 630 },
+                'instagram': { width: 1080, height: 1080 },
+                'instagram-story': { width: 1080, height: 1920 },
+                'twitter': { width: 1200, height: 675 },
+                'youtube': { width: 1280, height: 720 },
+                'linkedin': { width: 1200, height: 627 }
+            };
+
+            if (presets[preset]) {
+                document.getElementById('width').value = presets[preset].width;
+                document.getElementById('height').value = presets[preset].height;
+                updatePreview();
+            }
+        }
+
+        function updatePreview() {
+            if (!selectedFile) return;
+
+            const method = document.getElementById('resizeMethod').value;
+            let newWidth, newHeight;
+
+            if (method === 'custom') {
+                newWidth = parseInt(document.getElementById('width').value) || originalWidth;
+                newHeight = parseInt(document.getElementById('height').value) || originalHeight;
+                
+                if (document.getElementById('maintainAspect').checked) {
+                    const aspectRatio = originalWidth / originalHeight;
+                    if (newWidth !== originalWidth) {
+                        newHeight = Math.round(newWidth / aspectRatio);
+                        document.getElementById('height').value = newHeight;
+                    } else {
+                        newWidth = Math.round(newHeight * aspectRatio);
+                        document.getElementById('width').value = newWidth;
+                    }
+                }
+            } else if (method === 'percentage') {
+                const percentage = parseInt(document.getElementById('percentage').value) / 100;
+                newWidth = Math.round(originalWidth * percentage);
+                newHeight = Math.round(originalHeight * percentage);
+            } else if (method === 'preset') {
+                newWidth = parseInt(document.getElementById('width').value);
+                newHeight = parseInt(document.getElementById('height').value);
+            }
+
+            // Update preview
+            const resizedPreview = document.getElementById('resizedPreview');
+            const resizedInfo = document.getElementById('resizedInfo');
+            
+            if (newWidth && newHeight) {
+                resizedInfo.textContent = `New size: ${newWidth}x${newHeight}px`;
+                
+                // Create preview
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    canvas.width = newWidth;
+                    canvas.height = newHeight;
+                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                    resizedPreview.src = canvas.toDataURL();
+                };
+                img.src = URL.createObjectURL(selectedFile);
+            }
+        }
+
+        function resizeImage() {
+            if (!selectedFile) {
+                showNotification('Please select an image first', 'error');
+                return;
+            }
+
+            const method = document.getElementById('resizeMethod').value;
+            let newWidth, newHeight;
+
+            if (method === 'custom') {
+                newWidth = parseInt(document.getElementById('width').value);
+                newHeight = parseInt(document.getElementById('height').value);
+            } else if (method === 'percentage') {
+                const percentage = parseInt(document.getElementById('percentage').value) / 100;
+                newWidth = Math.round(originalWidth * percentage);
+                newHeight = Math.round(originalHeight * percentage);
+            } else if (method === 'preset') {
+                newWidth = parseInt(document.getElementById('width').value);
+                newHeight = parseInt(document.getElementById('height').value);
+            }
+
+            if (!newWidth || !newHeight) {
+                showNotification('Please enter valid dimensions', 'error');
+                return;
+            }
+
+            const resizeBtn = document.getElementById('resizeBtn');
+            const result = document.getElementById('result');
+            
+            resizeBtn.disabled = true;
+            resizeBtn.innerHTML = '<span class="loading"></span> Resizing...';
+
+            setTimeout(() => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        canvas.width = newWidth;
+                        canvas.height = newHeight;
+                        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                        
+                        const resizedDataURL = canvas.toDataURL('image/jpeg', 0.9);
+                        
+                        // Create download link
+                        const link = document.createElement('a');
+                        link.download = selectedFile.name.replace(/\.[^/.]+$/, '') + '_resized.jpg';
+                        link.href = resizedDataURL;
+                        
+                        // Show result
+                        result.innerHTML = `
+                            <div class="text-center">
+                                <h5 class="text-success mb-3">Image Resized Successfully!</h5>
+                                <p>Original: ${originalWidth}x${originalHeight}px → Resized: ${newWidth}x${newHeight}px</p>
+                                <button class="btn btn-primary" onclick="this.previousElementSibling.previousElementSibling.click()">
+                                    <i class="fas fa-download me-2"></i>Download Resized Image
+                                </button>
+                                <a href="${resizedDataURL}" class="btn btn-outline-secondary ms-2" target="_blank">
+                                    <i class="fas fa-external-link-alt me-2"></i>Preview
+                                </a>
+                            </div>
+                        `;
+                        result.style.display = 'block';
+                        
+                        // Auto-click download
+                        link.click();
+                        
+                        showNotification('Image resized successfully!', 'success');
+                    };
+                    
+                    img.src = URL.createObjectURL(selectedFile);
+                    
+                } catch (error) {
+                    showNotification('Error resizing image: ' + error.message, 'error');
+                    result.innerHTML = '<p class="text-danger">Error: ' + error.message + '</p>';
+                    result.style.display = 'block';
+                }
+                
+                resizeBtn.disabled = false;
+                resizeBtn.innerHTML = '<i class="fas fa-expand-arrows-alt me-2"></i>Resize Image';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

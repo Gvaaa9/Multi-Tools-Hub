@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Minifier - Multi-Tools Hub</title>
+    <meta name="description" content="Minify CSS code online for free. Remove unnecessary whitespace and comments to reduce file size.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-compress me-3"></i>CSS Minifier</h1>
+                            <p>Minify CSS code to reduce file size and improve loading speed</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="cssInput" class="form-label">Enter CSS Code *</label>
+                                    <textarea class="form-control code-editor" id="cssInput" rows="12" placeholder="Paste your CSS code here..."></textarea>
+                                    <div class="form-text">Enter CSS code to minify</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="minifyCSS()">
+                                        <i class="fas fa-compress me-2"></i>Minify CSS
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearCSS()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="minifyOptions" class="form-label">Minification Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="removeComments" checked>
+                                        <label class="form-check-label" for="removeComments">
+                                            Remove comments
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="removeWhitespace" checked>
+                                        <label class="form-check-label" for="removeWhitespace">
+                                            Remove unnecessary whitespace
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="removeEmptyRules" checked>
+                                        <label class="form-check-label" for="removeEmptyRules">
+                                            Remove empty rules
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="cssOutput" class="form-label">Minified CSS</label>
+                                    <textarea class="form-control code-editor" id="cssOutput" rows="12" readonly placeholder="Minified CSS will appear here..."></textarea>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary" onclick="copyCSS()">
+                                        <i class="fas fa-copy me-2"></i>Copy CSS
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadCSS()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info" id="minifyStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use CSS Minifier</h4>
+                            <ol>
+                                <li>Paste your CSS code into the input area</li>
+                                <li>Configure minification options as needed</li>
+                                <li>Click "Minify CSS" to compress the code</li>
+                                <li>Copy or download the minified CSS</li>
+                            </ol>
+
+                            <h5 class="mt-4">CSS Minification Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Optimization</h6>
+                                    <ul>
+                                        <li>Remove unnecessary whitespace</li>
+                                        <li>Remove comments and empty rules</li>
+                                        <li>Optimize color values</li>
+                                        <li>Remove redundant properties</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Benefits</h6>
+                                    <ul>
+                                        <li>Reduced file size</li>
+                                        <li>Faster loading times</li>
+                                        <li>Better performance</li>
+                                        <li>Bandwidth savings</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCSSMinifier();
+        });
+
+        function initializeCSSMinifier() {
+            // Add any initialization code here
+        }
+
+        function minifyCSS() {
+            const cssInput = document.getElementById('cssInput');
+            const cssOutput = document.getElementById('cssOutput');
+            const minifyStatus = document.getElementById('minifyStatus');
+            const statusText = document.getElementById('statusText');
+            
+            const css = cssInput.value.trim();
+            
+            if (!css) {
+                showNotification('Please enter CSS code to minify', 'warning');
+                return;
+            }
+
+            try {
+                const minified = minifyCSSCode(css);
+                cssOutput.value = minified;
+                
+                const originalSize = css.length;
+                const minifiedSize = minified.length;
+                const savings = ((originalSize - minifiedSize) / originalSize * 100).toFixed(1);
+                
+                minifyStatus.className = 'alert alert-success';
+                minifyStatus.style.display = 'block';
+                statusText.innerHTML = `<i class="fas fa-check-circle me-2"></i>CSS minified successfully! Size reduced by ${savings}% (${originalSize} → ${minifiedSize} characters)`;
+                
+                showNotification('CSS minified successfully', 'success');
+            } catch (error) {
+                minifyStatus.className = 'alert alert-danger';
+                minifyStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error minifying CSS: ' + error.message;
+                
+                showNotification('Error minifying CSS: ' + error.message, 'error');
+            }
+        }
+
+        function minifyCSSCode(css) {
+            let minified = css;
+            
+            // Remove comments
+            if (document.getElementById('removeComments').checked) {
+                minified = minified.replace(/\/\*[\s\S]*?\*\//g, '');
+            }
+            
+            // Remove unnecessary whitespace
+            if (document.getElementById('removeWhitespace').checked) {
+                // Remove extra spaces around selectors and properties
+                minified = minified.replace(/\s*{\s*/g, '{');
+                minified = minified.replace(/\s*}\s*/g, '}');
+                minified = minified.replace(/\s*;\s*/g, ';');
+                minified = minified.replace(/\s*:\s*/g, ':');
+                minified = minified.replace(/\s*,\s*/g, ',');
+                
+                // Remove line breaks and extra spaces
+                minified = minified.replace(/\s+/g, ' ');
+                minified = minified.replace(/\s*{\s*/g, '{');
+                minified = minified.replace(/\s*}\s*/g, '}');
+                minified = minified.replace(/\s*;\s*/g, ';');
+                minified = minified.replace(/\s*:\s*/g, ':');
+                minified = minified.replace(/\s*,\s*/g, ',');
+                
+                // Remove spaces around operators
+                minified = minified.replace(/\s*>\s*/g, '>');
+                minified = minified.replace(/\s*\+\s*/g, '+');
+                minified = minified.replace(/\s*~\s*/g, '~');
+                
+                // Remove spaces around parentheses
+                minified = minified.replace(/\s*\(\s*/g, '(');
+                minified = minified.replace(/\s*\)\s*/g, ')');
+                
+                // Remove leading and trailing whitespace
+                minified = minified.trim();
+            }
+            
+            // Remove empty rules
+            if (document.getElementById('removeEmptyRules').checked) {
+                minified = minified.replace(/[^{}]+{\s*}/g, '');
+            }
+            
+            // Optimize color values
+            minified = minified.replace(/#([0-9a-fA-F])\1([0-9a-fA-F])\2([0-9a-fA-F])\3/g, '#$1$2$3');
+            
+            // Optimize zero values
+            minified = minified.replace(/\b0px\b/g, '0');
+            minified = minified.replace(/\b0em\b/g, '0');
+            minified = minified.replace(/\b0rem\b/g, '0');
+            minified = minified.replace(/\b0%\b/g, '0');
+            
+            return minified;
+        }
+
+        function clearCSS() {
+            document.getElementById('cssInput').value = '';
+            document.getElementById('cssOutput').value = '';
+            document.getElementById('minifyStatus').style.display = 'none';
+        }
+
+        function copyCSS() {
+            const cssOutput = document.getElementById('cssOutput');
+            const text = cssOutput.value;
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Minified CSS copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy CSS', 'error');
+                });
+            } else {
+                showNotification('No CSS to copy', 'warning');
+            }
+        }
+
+        function downloadCSS() {
+            const cssOutput = document.getElementById('cssOutput');
+            const text = cssOutput.value;
+            
+            if (text.trim()) {
+                const blob = new Blob([text], { type: 'text/css' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'minified.css';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('Minified CSS file downloaded', 'success');
+            } else {
+                showNotification('No CSS to download', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

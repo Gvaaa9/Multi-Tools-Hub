@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-book Creator - Multi-Tools Hub</title>
+  <meta name="description" content="Create a simple EPUB-like zip (HTML chapters) or print to PDF." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="header"></div>
+  <div class="tool-page">
+    <div class="container py-5">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="tool-content">
+            <div class="tool-header">
+              <h1 class="mb-1">E-book Creator</h1>
+              <p class="text-muted">Add chapters and export</p>
+            </div>
+            <div class="mb-3"><label class="form-label">Title</label><input id="title" class="form-control" placeholder="My Book" /></div>
+            <div class="mb-3"><label class="form-label">New Chapter Title</label><input id="chapTitle" class="form-control" placeholder="Chapter 1" /></div>
+            <div class="mb-3"><label class="form-label">Chapter Content</label><textarea id="chapContent" class="form-control" rows="5" placeholder="Write chapter content..."></textarea></div>
+            <div class="d-flex gap-2 mb-3">
+              <button id="addChap" class="btn btn-primary" type="button">Add Chapter</button>
+              <button id="print" class="btn btn-outline-secondary" type="button">Print / PDF</button>
+            </div>
+            <div class="ad-banner text-center"><div class="ad-placeholder bg-light border rounded p-3"><p class="text-muted mb-0">Advertisement Space</p></div></div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="border rounded p-3 bg-white">
+            <h3 id="pTitle">My Book</h3>
+            <div id="chapters"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+  <script>
+    const list = document.getElementById('chapters');
+    document.getElementById('addChap').addEventListener('click', ()=>{
+      const t = document.getElementById('chapTitle').value.trim() || 'Untitled Chapter';
+      const c = document.getElementById('chapContent').value.trim() || '';
+      const sec = document.createElement('section');
+      sec.className='mb-3';
+      sec.innerHTML = `<h5>${t}</h5><p>${c.replace(/\n/g,'<br/>')}</p>`;
+      list.appendChild(sec);
+      document.getElementById('chapTitle').value='';
+      document.getElementById('chapContent').value='';
+    });
+    document.getElementById('title').addEventListener('input', e=>{ document.getElementById('pTitle').textContent=e.target.value||'My Book'; });
+    document.getElementById('print').addEventListener('click', ()=>window.print());
+  </script>
+</body>
+</html>
+
+

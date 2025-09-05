@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Formatter - Multi-Tools Hub</title>
+    <meta name="description" content="Format SQL queries online for free. Beautify SQL with proper indentation and syntax highlighting.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-database me-3"></i>SQL Formatter</h1>
+                            <p>Format SQL queries with proper indentation and syntax highlighting</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="sqlInput" class="form-label">Enter SQL Query *</label>
+                                    <textarea class="form-control code-editor" id="sqlInput" rows="12" placeholder="Paste your SQL query here..."></textarea>
+                                    <div class="form-text">Enter SQL query to format</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="formatSQL()">
+                                        <i class="fas fa-magic me-2"></i>Format SQL
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearSQL()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="indentSize" class="form-label">Indent Size</label>
+                                    <select class="form-select" id="indentSize">
+                                        <option value="2" selected>2 spaces</option>
+                                        <option value="4">4 spaces</option>
+                                        <option value="8">8 spaces</option>
+                                        <option value="tab">Tab</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="formatOptions" class="form-label">Format Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="uppercaseKeywords" checked>
+                                        <label class="form-check-label" for="uppercaseKeywords">
+                                            Uppercase keywords
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="addSemicolon" checked>
+                                        <label class="form-check-label" for="addSemicolon">
+                                            Add semicolon at end
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="sqlOutput" class="form-label">Formatted SQL</label>
+                                    <textarea class="form-control code-editor" id="sqlOutput" rows="12" readonly placeholder="Formatted SQL will appear here..."></textarea>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary" onclick="copySQL()">
+                                        <i class="fas fa-copy me-2"></i>Copy SQL
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadSQL()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info" id="formatStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use SQL Formatter</h4>
+                            <ol>
+                                <li>Paste your SQL query into the input area</li>
+                                <li>Choose your preferred indent size and options</li>
+                                <li>Click "Format SQL" to beautify the query</li>
+                                <li>Copy or download the formatted SQL</li>
+                            </ol>
+
+                            <h5 class="mt-4">SQL Formatting Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Formatting Options</h6>
+                                    <ul>
+                                        <li>Proper indentation with customizable spacing</li>
+                                        <li>Uppercase SQL keywords</li>
+                                        <li>Add semicolon at end of query</li>
+                                        <li>Clean and readable output</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Supported SQL</h6>
+                                    <ul>
+                                        <li>SELECT statements</li>
+                                        <li>INSERT statements</li>
+                                        <li>UPDATE statements</li>
+                                        <li>DELETE statements</li>
+                                        <li>CREATE statements</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSQLFormatter();
+        });
+
+        function initializeSQLFormatter() {
+            // Add any initialization code here
+        }
+
+        function formatSQL() {
+            const sqlInput = document.getElementById('sqlInput');
+            const sqlOutput = document.getElementById('sqlOutput');
+            const formatStatus = document.getElementById('formatStatus');
+            const statusText = document.getElementById('statusText');
+            
+            const sql = sqlInput.value.trim();
+            
+            if (!sql) {
+                showNotification('Please enter SQL query to format', 'warning');
+                return;
+            }
+
+            try {
+                const formatted = formatSQLQuery(sql);
+                sqlOutput.value = formatted;
+                
+                formatStatus.className = 'alert alert-success';
+                formatStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i>SQL formatted successfully';
+                
+                showNotification('SQL formatted successfully', 'success');
+            } catch (error) {
+                formatStatus.className = 'alert alert-danger';
+                formatStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error formatting SQL: ' + error.message;
+                
+                showNotification('Error formatting SQL: ' + error.message, 'error');
+            }
+        }
+
+        function formatSQLQuery(sql) {
+            let formatted = sql;
+            
+            // Get options
+            const indentSize = document.getElementById('indentSize').value;
+            const uppercaseKeywords = document.getElementById('uppercaseKeywords').checked;
+            const addSemicolon = document.getElementById('addSemicolon').checked;
+            
+            // Determine indent
+            let indent = '  ';
+            if (indentSize === 'tab') {
+                indent = '\t';
+            } else {
+                indent = ' '.repeat(parseInt(indentSize));
+            }
+            
+            // Uppercase keywords
+            if (uppercaseKeywords) {
+                const keywords = [
+                    'SELECT', 'FROM', 'WHERE', 'JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'INNER JOIN', 'OUTER JOIN',
+                    'ON', 'GROUP BY', 'ORDER BY', 'HAVING', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET',
+                    'DELETE', 'CREATE', 'TABLE', 'ALTER', 'DROP', 'INDEX', 'PRIMARY KEY', 'FOREIGN KEY',
+                    'UNIQUE', 'NOT NULL', 'DEFAULT', 'AUTO_INCREMENT', 'AS', 'AND', 'OR', 'IN', 'NOT IN',
+                    'BETWEEN', 'LIKE', 'IS NULL', 'IS NOT NULL', 'EXISTS', 'CASE', 'WHEN', 'THEN', 'ELSE',
+                    'END', 'UNION', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'LIMIT', 'OFFSET'
+                ];
+                
+                keywords.forEach(keyword => {
+                    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+                    formatted = formatted.replace(regex, keyword);
+                });
+            }
+            
+            // Add proper indentation
+            formatted = addIndentation(formatted, indent);
+            
+            // Add semicolon at end if not present
+            if (addSemicolon && !formatted.trim().endsWith(';')) {
+                formatted = formatted.trim() + ';';
+            }
+            
+            return formatted;
+        }
+
+        function addIndentation(sql, indent) {
+            const lines = sql.split('\n');
+            let result = [];
+            let currentIndent = 0;
+            
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    result.push('');
+                    continue;
+                }
+                
+                // Decrease indent for closing keywords
+                if (trimmed.match(/^(END|ELSE|ELSEIF|WHEN|THEN|CASE|UNION|INTERSECT|EXCEPT)\b/i)) {
+                    currentIndent = Math.max(0, currentIndent - 1);
+                }
+                
+                // Add current line with proper indentation
+                result.push(indent.repeat(currentIndent) + trimmed);
+                
+                // Increase indent for opening keywords
+                if (trimmed.match(/^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|CASE|WHEN|IF|ELSE|ELSEIF|UNION|INTERSECT|EXCEPT)\b/i)) {
+                    currentIndent++;
+                }
+            }
+            
+            return result.join('\n');
+        }
+
+        function clearSQL() {
+            document.getElementById('sqlInput').value = '';
+            document.getElementById('sqlOutput').value = '';
+            document.getElementById('formatStatus').style.display = 'none';
+        }
+
+        function copySQL() {
+            const sqlOutput = document.getElementById('sqlOutput');
+            const text = sqlOutput.value;
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Formatted SQL copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy SQL', 'error');
+                });
+            } else {
+                showNotification('No SQL to copy', 'warning');
+            }
+        }
+
+        function downloadSQL() {
+            const sqlOutput = document.getElementById('sqlOutput');
+            const text = sqlOutput.value;
+            
+            if (text.trim()) {
+                const blob = new Blob([text], { type: 'text/sql' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'formatted.sql';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('Formatted SQL file downloaded', 'success');
+            } else {
+                showNotification('No SQL to download', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

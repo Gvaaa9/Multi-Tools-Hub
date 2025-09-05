@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder & Decoder - Multi-Tools Hub</title>
+    <meta name="description" content="Encode and decode Base64 strings online for free. Convert text, images, and files to Base64 format.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-code me-3"></i>Base64 Encoder & Decoder</h1>
+                            <p>Encode and decode Base64 strings, text, and files</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="inputText" class="form-label">Input Text *</label>
+                                    <textarea class="form-control code-editor" id="inputText" rows="8" placeholder="Enter text to encode or Base64 to decode..."></textarea>
+                                    <div class="form-text">Enter text to encode or Base64 string to decode</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fileInput" class="form-label">Or Upload File</label>
+                                    <input type="file" class="form-control" id="fileInput" accept="*/*">
+                                    <div class="form-text">Upload a file to encode to Base64</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="encodeText()">
+                                        <i class="fas fa-lock me-2"></i>Encode to Base64
+                                    </button>
+                                    <button class="btn btn-success" onclick="decodeText()">
+                                        <i class="fas fa-unlock me-2"></i>Decode from Base64
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearText()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="encodingOptions" class="form-label">Encoding Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="addLineBreaks" checked>
+                                        <label class="form-check-label" for="addLineBreaks">
+                                            Add line breaks every 76 characters
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="urlSafe" checked>
+                                        <label class="form-check-label" for="urlSafe">
+                                            URL-safe encoding
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="outputText" class="form-label">Output</label>
+                                    <textarea class="form-control code-editor" id="outputText" rows="8" readonly placeholder="Encoded or decoded text will appear here..."></textarea>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary" onclick="copyOutput()">
+                                        <i class="fas fa-copy me-2"></i>Copy Output
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadOutput()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info" id="encodingStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fileInfo" class="form-label">File Information</label>
+                                    <div class="alert alert-secondary" id="fileInfo" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>File Name:</strong> <span id="fileName">-</span><br>
+                                                <strong>File Size:</strong> <span id="fileSize">-</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>File Type:</strong> <span id="fileType">-</span><br>
+                                                <strong>Base64 Size:</strong> <span id="base64Size">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Base64 Encoder & Decoder</h4>
+                            <ol>
+                                <li>Enter text in the input area or upload a file</li>
+                                <li>Click "Encode to Base64" to convert text to Base64</li>
+                                <li>Click "Decode from Base64" to convert Base64 back to text</li>
+                                <li>Copy or download the result</li>
+                            </ol>
+
+                            <h5 class="mt-4">Base64 Encoding Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Encoding</h6>
+                                    <ul>
+                                        <li>Convert text to Base64 format</li>
+                                        <li>Encode files and images</li>
+                                        <li>URL-safe encoding option</li>
+                                        <li>Line break formatting</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Decoding</h6>
+                                    <ul>
+                                        <li>Convert Base64 back to text</li>
+                                        <li>Decode files and images</li>
+                                        <li>Validate Base64 format</li>
+                                        <li>Error handling and validation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBase64Tool();
+        });
+
+        function initializeBase64Tool() {
+            const fileInput = document.getElementById('fileInput');
+            
+            // Add event listener for file upload
+            fileInput.addEventListener('change', handleFileUpload);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    document.getElementById('inputText').value = base64;
+                    
+                    // Update file information
+                    updateFileInfo(file, base64);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateFileInfo(file, base64) {
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileType = document.getElementById('fileType');
+            const base64Size = document.getElementById('base64Size');
+            
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileType.textContent = file.type || 'Unknown';
+            base64Size.textContent = formatFileSize(base64.length);
+            
+            fileInfo.style.display = 'block';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function encodeText() {
+            const inputText = document.getElementById('inputText').value.trim();
+            const outputText = document.getElementById('outputText');
+            const encodingStatus = document.getElementById('encodingStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (!inputText) {
+                showNotification('Please enter text to encode', 'warning');
+                return;
+            }
+
+            try {
+                let encoded = btoa(unescape(encodeURIComponent(inputText)));
+                
+                // Apply options
+                if (document.getElementById('addLineBreaks').checked) {
+                    encoded = addLineBreaks(encoded);
+                }
+                
+                if (document.getElementById('urlSafe').checked) {
+                    encoded = makeUrlSafe(encoded);
+                }
+                
+                outputText.value = encoded;
+                
+                encodingStatus.className = 'alert alert-success';
+                encodingStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i>Text encoded to Base64 successfully';
+                
+                showNotification('Text encoded to Base64 successfully', 'success');
+            } catch (error) {
+                encodingStatus.className = 'alert alert-danger';
+                encodingStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error encoding text: ' + error.message;
+                
+                showNotification('Error encoding text: ' + error.message, 'error');
+            }
+        }
+
+        function decodeText() {
+            const inputText = document.getElementById('inputText').value.trim();
+            const outputText = document.getElementById('outputText');
+            const encodingStatus = document.getElementById('encodingStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (!inputText) {
+                showNotification('Please enter Base64 text to decode', 'warning');
+                return;
+            }
+
+            try {
+                // Remove line breaks and spaces
+                let cleanInput = inputText.replace(/\s/g, '');
+                
+                // Handle URL-safe encoding
+                if (document.getElementById('urlSafe').checked) {
+                    cleanInput = cleanInput.replace(/-/g, '+').replace(/_/g, '/');
+                }
+                
+                const decoded = decodeURIComponent(escape(atob(cleanInput)));
+                outputText.value = decoded;
+                
+                encodingStatus.className = 'alert alert-success';
+                encodingStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i>Base64 decoded successfully';
+                
+                showNotification('Base64 decoded successfully', 'success');
+            } catch (error) {
+                encodingStatus.className = 'alert alert-danger';
+                encodingStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error decoding Base64: ' + error.message;
+                
+                showNotification('Error decoding Base64: ' + error.message, 'error');
+            }
+        }
+
+        function addLineBreaks(text) {
+            return text.replace(/.{76}/g, '$&\n');
+        }
+
+        function makeUrlSafe(text) {
+            return text.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('encodingStatus').style.display = 'none';
+            document.getElementById('fileInfo').style.display = 'none';
+        }
+
+        function copyOutput() {
+            const outputText = document.getElementById('outputText');
+            const text = outputText.value;
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Output copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy output', 'error');
+                });
+            } else {
+                showNotification('No output to copy', 'warning');
+            }
+        }
+
+        function downloadOutput() {
+            const outputText = document.getElementById('outputText');
+            const text = outputText.value;
+            
+            if (text.trim()) {
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'base64_output.txt';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('Output file downloaded', 'success');
+            } else {
+                showNotification('No output to download', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

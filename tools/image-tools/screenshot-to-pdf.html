@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot to PDF Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Convert screenshots to PDF documents online for free. Combine multiple screenshots into a single PDF file.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-file-pdf me-3"></i>Screenshot to PDF Converter</h1>
+                            <p>Convert screenshots to PDF documents with multiple pages</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="upload-area border border-2 border-dashed rounded p-5 text-center mb-4" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h5>Upload Screenshots</h5>
+                                    <p class="text-muted">Drag and drop screenshot images here or click to browse</p>
+                                    <input type="file" id="imageInput" accept="image/*" multiple class="d-none">
+                                    <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                                        Choose Files
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="preview-area border rounded p-3" id="previewArea" style="display: none;">
+                                    <h6>Selected Screenshots</h6>
+                                    <div id="imageList" class="mb-3"></div>
+                                    <div class="text-center">
+                                        <button class="btn btn-success" id="createPdfBtn" disabled>
+                                            <i class="fas fa-file-pdf me-2"></i>Create PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4" id="pdfSettings" style="display: none;">
+                            <div class="col-md-6">
+                                <h5>PDF Settings</h5>
+                                <div class="form-group mb-3">
+                                    <label for="pageSize" class="form-label">Page Size</label>
+                                    <select class="form-select" id="pageSize">
+                                        <option value="a4">A4 (210 x 297 mm)</option>
+                                        <option value="letter">Letter (8.5 x 11 in)</option>
+                                        <option value="legal">Legal (8.5 x 14 in)</option>
+                                        <option value="tabloid">Tabloid (11 x 17 in)</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                <div id="customSize" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label for="customWidth" class="form-label">Width (mm)</label>
+                                            <input type="number" class="form-control" id="customWidth" min="50" max="500" value="210">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="customHeight" class="form-label">Height (mm)</label>
+                                            <input type="number" class="form-control" id="customHeight" min="50" max="500" value="297">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="orientation" class="form-label">Orientation</label>
+                                    <select class="form-select" id="orientation">
+                                        <option value="portrait">Portrait</option>
+                                        <option value="landscape">Landscape</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="margin" class="form-label">Margin (mm)</label>
+                                    <input type="range" class="form-range" id="margin" min="0" max="50" value="10">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">No margin</small>
+                                        <small class="text-muted" id="marginValue">10mm</small>
+                                        <small class="text-muted">50mm</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fitMode" class="form-label">Image Fit Mode</label>
+                                    <select class="form-select" id="fitMode">
+                                        <option value="fit">Fit to page</option>
+                                        <option value="fill">Fill page</option>
+                                        <option value="original">Original size</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>PDF Preview</h5>
+                                <div class="pdf-preview border rounded p-3 text-center" id="pdfPreview">
+                                    <p class="text-muted">PDF preview will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Convert Screenshots to PDF</h4>
+                            <ol>
+                                <li>Upload your screenshot images by clicking "Choose Files" or dragging and dropping</li>
+                                <li>Arrange the images in the order you want them to appear in the PDF</li>
+                                <li>Adjust the PDF settings (page size, orientation, margins, etc.)</li>
+                                <li>Click "Create PDF" to generate your PDF document</li>
+                                <li>Download your PDF file</li>
+                            </ol>
+
+                            <h5 class="mt-4">PDF Settings Explained</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Page Size</h6>
+                                    <p>Choose from standard page sizes or set custom dimensions.</p>
+                                    
+                                    <h6>Orientation</h6>
+                                    <p>Portrait (vertical) or Landscape (horizontal) orientation.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Margins</h6>
+                                    <p>Set margins around the images in the PDF.</p>
+                                    
+                                    <h6>Fit Mode</h6>
+                                    <p>How images should be sized on the page.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        let selectedFiles = [];
+
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeScreenshotToPDF();
+        });
+
+        function initializeScreenshotToPDF() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const pageSize = document.getElementById('pageSize');
+            const customSize = document.getElementById('customSize');
+            const margin = document.getElementById('margin');
+            const marginValue = document.getElementById('marginValue');
+            const createPdfBtn = document.getElementById('createPdfBtn');
+
+            // File input change
+            imageInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+
+            // Page size change
+            pageSize.addEventListener('change', function() {
+                customSize.style.display = this.value === 'custom' ? 'block' : 'none';
+                updatePreview();
+            });
+
+            // Margin slider
+            margin.addEventListener('input', function() {
+                marginValue.textContent = this.value + 'mm';
+                updatePreview();
+            });
+
+            // Other settings
+            document.getElementById('orientation').addEventListener('change', updatePreview);
+            document.getElementById('fitMode').addEventListener('change', updatePreview);
+            document.getElementById('customWidth').addEventListener('input', updatePreview);
+            document.getElementById('customHeight').addEventListener('input', updatePreview);
+
+            // Create PDF button
+            createPdfBtn.addEventListener('click', createPDF);
+        }
+
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            processFiles(files);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('border-primary');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('border-primary');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('border-primary');
+            
+            const files = Array.from(event.dataTransfer.files);
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            
+            if (imageFiles.length > 0) {
+                processFiles(imageFiles);
+            } else {
+                showNotification('Please drop valid image files', 'error');
+            }
+        }
+
+        function processFiles(files) {
+            selectedFiles = files;
+            
+            const previewArea = document.getElementById('previewArea');
+            const pdfSettings = document.getElementById('pdfSettings');
+            const imageList = document.getElementById('imageList');
+            const createPdfBtn = document.getElementById('createPdfBtn');
+
+            // Show preview area and settings
+            previewArea.style.display = 'block';
+            pdfSettings.style.display = 'block';
+
+            // Display image list
+            imageList.innerHTML = '';
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'd-flex align-items-center justify-content-between border rounded p-2 mb-2';
+                fileItem.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-image text-muted me-2"></i>
+                        <span class="small">${file.name}</span>
+                        <span class="badge bg-secondary ms-2">Page ${index + 1}</span>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="moveUp(${index})" ${index === 0 ? 'disabled' : ''}>
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="moveDown(${index})" ${index === files.length - 1 ? 'disabled' : ''}>
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                imageList.appendChild(fileItem);
+            });
+
+            createPdfBtn.disabled = false;
+            updatePreview();
+        }
+
+        function moveUp(index) {
+            if (index > 0) {
+                [selectedFiles[index - 1], selectedFiles[index]] = [selectedFiles[index], selectedFiles[index - 1]];
+                processFiles(selectedFiles);
+            }
+        }
+
+        function moveDown(index) {
+            if (index < selectedFiles.length - 1) {
+                [selectedFiles[index], selectedFiles[index + 1]] = [selectedFiles[index + 1], selectedFiles[index]];
+                processFiles(selectedFiles);
+            }
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            processFiles(selectedFiles);
+        }
+
+        function updatePreview() {
+            if (selectedFiles.length === 0) return;
+
+            const pageSize = document.getElementById('pageSize').value;
+            const orientation = document.getElementById('orientation').value;
+            const margin = document.getElementById('margin').value;
+            const fitMode = document.getElementById('fitMode').value;
+
+            const preview = document.getElementById('pdfPreview');
+            let previewText = `Pages: ${selectedFiles.length}<br>`;
+            previewText += `Size: ${pageSize.toUpperCase()}<br>`;
+            previewText += `Orientation: ${orientation}<br>`;
+            previewText += `Margin: ${margin}mm<br>`;
+            previewText += `Fit: ${fitMode}`;
+
+            preview.innerHTML = previewText;
+        }
+
+        function createPDF() {
+            if (selectedFiles.length === 0) {
+                showNotification('Please select images first', 'error');
+                return;
+            }
+
+            const createPdfBtn = document.getElementById('createPdfBtn');
+            const result = document.getElementById('result');
+            
+            createPdfBtn.disabled = true;
+            createPdfBtn.innerHTML = '<span class="loading"></span> Creating PDF...';
+
+            const pageSize = document.getElementById('pageSize').value;
+            const orientation = document.getElementById('orientation').value;
+            const margin = parseInt(document.getElementById('margin').value);
+            const fitMode = document.getElementById('fitMode').value;
+
+            // Get page dimensions
+            let pageWidth, pageHeight;
+            if (pageSize === 'custom') {
+                pageWidth = parseFloat(document.getElementById('customWidth').value);
+                pageHeight = parseFloat(document.getElementById('customHeight').value);
+            } else {
+                const sizes = {
+                    'a4': [210, 297],
+                    'letter': [216, 279],
+                    'legal': [216, 356],
+                    'tabloid': [279, 432]
+                };
+                [pageWidth, pageHeight] = sizes[pageSize];
+            }
+
+            if (orientation === 'landscape') {
+                [pageWidth, pageHeight] = [pageHeight, pageWidth];
+            }
+
+            // Create PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: orientation,
+                unit: 'mm',
+                format: pageSize === 'custom' ? [pageWidth, pageHeight] : pageSize
+            });
+
+            let processedCount = 0;
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        try {
+                            if (index > 0) {
+                                pdf.addPage();
+                            }
+
+                            // Calculate image dimensions
+                            let imgWidth, imgHeight;
+                            const availableWidth = pageWidth - (margin * 2);
+                            const availableHeight = pageHeight - (margin * 2);
+
+                            if (fitMode === 'fit') {
+                                const aspectRatio = img.width / img.height;
+                                if (aspectRatio > availableWidth / availableHeight) {
+                                    imgWidth = availableWidth;
+                                    imgHeight = availableWidth / aspectRatio;
+                                } else {
+                                    imgHeight = availableHeight;
+                                    imgWidth = availableHeight * aspectRatio;
+                                }
+                            } else if (fitMode === 'fill') {
+                                imgWidth = availableWidth;
+                                imgHeight = availableHeight;
+                            } else { // original
+                                imgWidth = img.width * 0.264583; // Convert px to mm
+                                imgHeight = img.height * 0.264583;
+                            }
+
+                            // Center the image
+                            const x = margin + (availableWidth - imgWidth) / 2;
+                            const y = margin + (availableHeight - imgHeight) / 2;
+
+                            pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
+
+                            processedCount++;
+                            
+                            if (processedCount === selectedFiles.length) {
+                                // All images processed, generate PDF
+                                const pdfBlob = pdf.output('blob');
+                                const pdfUrl = URL.createObjectURL(pdfBlob);
+                                
+                                // Show result
+                                result.innerHTML = `
+                                    <div class="text-center">
+                                        <h5 class="text-success mb-3">PDF Created Successfully!</h5>
+                                        <p>Your PDF document has been created with ${selectedFiles.length} pages.</p>
+                                        <div class="mb-3">
+                                            <iframe src="${pdfUrl}" width="100%" height="400" style="border: 1px solid #ddd;"></iframe>
+                                        </div>
+                                        <button class="btn btn-primary" onclick="downloadPDF('${pdfUrl}')">
+                                            <i class="fas fa-download me-2"></i>Download PDF
+                                        </button>
+                                    </div>
+                                `;
+                                result.style.display = 'block';
+
+                                showNotification('PDF created successfully!', 'success');
+                            }
+                        } catch (error) {
+                            showNotification('Error processing image: ' + error.message, 'error');
+                            processedCount++;
+                            
+                            if (processedCount === selectedFiles.length) {
+                                displayResults();
+                            }
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function downloadPDF(pdfUrl) {
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'screenshots.pdf';
+            link.click();
+        }
+    </script>
+</body>
+</html>

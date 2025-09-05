@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech - Multi-Tools Hub</title>
+    <meta name="description" content="Convert text to speech online for free. Listen to your text with different voices and speeds.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-volume-up me-3"></i>Text to Speech</h1>
+                            <p>Convert text to speech with different voices and speeds</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label for="textInput" class="form-label">Enter Text to Speak *</label>
+                                    <textarea class="form-control" id="textInput" rows="6" placeholder="Type or paste your text here to convert to speech..."></textarea>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="voiceSelect" class="form-label">Voice</label>
+                                        <select class="form-select" id="voiceSelect">
+                                            <option value="default">Default Voice</option>
+                                            <option value="male">Male Voice</option>
+                                            <option value="female">Female Voice</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="speedSelect" class="form-label">Speed</label>
+                                        <select class="form-select" id="speedSelect">
+                                            <option value="0.5">Slow (0.5x)</option>
+                                            <option value="1" selected>Normal (1x)</option>
+                                            <option value="1.5">Fast (1.5x)</option>
+                                            <option value="2">Very Fast (2x)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary" onclick="speakText()">
+                                        <i class="fas fa-play me-2"></i>Speak Text
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="stopSpeaking()">
+                                        <i class="fas fa-stop me-2"></i>Stop
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-preview border rounded p-3" id="statsPreview">
+                                    <h6>Text to Speech</h6>
+                                    <p class="text-muted">Enter text and click "Speak Text" to hear it</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+
+        function speakText() {
+            const text = document.getElementById('textInput').value;
+            if (!text.trim()) {
+                showNotification('Please enter text to speak', 'warning');
+                return;
+            }
+
+            // Stop any current speech
+            stopSpeaking();
+
+            // Create new utterance
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            
+            // Set voice properties
+            const voiceSelect = document.getElementById('voiceSelect').value;
+            const speedSelect = parseFloat(document.getElementById('speedSelect').value);
+            
+            currentUtterance.rate = speedSelect;
+            currentUtterance.pitch = 1;
+            currentUtterance.volume = 1;
+
+            // Set voice
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                if (voiceSelect === 'male') {
+                    currentUtterance.voice = voices.find(voice => voice.name.includes('Male')) || voices[0];
+                } else if (voiceSelect === 'female') {
+                    currentUtterance.voice = voices.find(voice => voice.name.includes('Female')) || voices[0];
+                } else {
+                    currentUtterance.voice = voices[0];
+                }
+            }
+
+            // Speak the text
+            speechSynthesis.speak(currentUtterance);
+            
+            showNotification('Speaking text...', 'success');
+        }
+
+        function stopSpeaking() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+                showNotification('Speech stopped', 'info');
+            }
+        }
+    </script>
+</body>
+</html>

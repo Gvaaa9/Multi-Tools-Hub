@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Calculate tips and split bills online for free. Get accurate tip amounts and bill splitting calculations.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .tip-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .tip-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .tip-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .tip-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .tip-detail-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .tip-presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .tip-preset-btn {
+            background-color: #e9ecef;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tip-preset-btn:hover {
+            background-color: #dee2e6;
+        }
+        .tip-preset-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #0056b3;
+        }
+        .split-bill {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .split-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .split-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-utensils me-3"></i>Tip Calculator</h1>
+                            <p>Calculate tips and split bills with friends</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="billAmount" class="form-label">Bill Amount *</label>
+                                    <input type="number" class="form-control" id="billAmount" placeholder="Enter bill amount" step="0.01">
+                                    <div class="form-text">Enter the total bill amount</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="tipPercentage" class="form-label">Tip Percentage</label>
+                                    <input type="number" class="form-control" id="tipPercentage" placeholder="Enter tip percentage" step="0.1" value="15">
+                                    <div class="form-text">Enter the tip percentage</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="tipPresets" class="form-label">Quick Tip Presets</label>
+                                    <div class="tip-presets">
+                                        <div class="tip-preset-btn" onclick="setTipPercentage(10)">10%</div>
+                                        <div class="tip-preset-btn" onclick="setTipPercentage(15)">15%</div>
+                                        <div class="tip-preset-btn" onclick="setTipPercentage(18)">18%</div>
+                                        <div class="tip-preset-btn" onclick="setTipPercentage(20)">20%</div>
+                                        <div class="tip-preset-btn" onclick="setTipPercentage(25)">25%</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="numberOfPeople" class="form-label">Number of People</label>
+                                    <input type="number" class="form-control" id="numberOfPeople" placeholder="Enter number of people" min="1" value="1">
+                                    <div class="form-text">How many people are splitting the bill?</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="taxRate" class="form-label">Tax Rate (%)</label>
+                                    <input type="number" class="form-control" id="taxRate" placeholder="Enter tax rate" step="0.1" value="0">
+                                    <div class="form-text">Enter tax rate (optional)</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="calculateTip()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate Tip
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearTip()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="tipOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showBreakdown" checked>
+                                        <label class="form-check-label" for="showBreakdown">
+                                            Show detailed breakdown
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showSplit" checked>
+                                        <label class="form-check-label" for="showSplit">
+                                            Show bill splitting
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="tipResults" style="display: none;">
+                                    <div class="tip-result">
+                                        <h2 class="mb-4">Total Amount</h2>
+                                        <div class="tip-value" id="totalAmount">$0.00</div>
+                                        <div class="mt-3">
+                                            <small>Tip: <span id="tipAmount">$0.00</span></small><br>
+                                            <small>Per Person: <span id="perPerson">$0.00</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="tip-details" id="tipBreakdown" style="display: none;">
+                                        <h5>Bill Breakdown</h5>
+                                        <div class="tip-detail-item">
+                                            <span>Bill Amount:</span>
+                                            <span id="billAmountBreakdown">$0.00</span>
+                                        </div>
+                                        <div class="tip-detail-item">
+                                            <span>Tax Amount:</span>
+                                            <span id="taxAmount">$0.00</span>
+                                        </div>
+                                        <div class="tip-detail-item">
+                                            <span>Tip Amount:</span>
+                                            <span id="tipAmountBreakdown">$0.00</span>
+                                        </div>
+                                        <div class="tip-detail-item">
+                                            <span>Total Amount:</span>
+                                            <span id="totalAmountBreakdown">$0.00</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="split-bill" id="splitBill" style="display: none;">
+                                        <h5>Bill Splitting</h5>
+                                        <div class="split-item">
+                                            <span>Bill per person:</span>
+                                            <span id="billPerPerson">$0.00</span>
+                                        </div>
+                                        <div class="split-item">
+                                            <span>Tip per person:</span>
+                                            <span id="tipPerPerson">$0.00</span>
+                                        </div>
+                                        <div class="split-item">
+                                            <span>Tax per person:</span>
+                                            <span id="taxPerPerson">$0.00</span>
+                                        </div>
+                                        <div class="split-item">
+                                            <span>Total per person:</span>
+                                            <span id="totalPerPerson">$0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="tipStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Tip Calculator</h4>
+                            <ol>
+                                <li>Enter the total bill amount</li>
+                                <li>Select tip percentage or use presets</li>
+                                <li>Enter number of people splitting the bill</li>
+                                <li>Optionally enter tax rate</li>
+                                <li>Click "Calculate Tip" to see results</li>
+                            </ol>
+
+                            <h5 class="mt-4">Tip Calculation Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Calculations</h6>
+                                    <ul>
+                                        <li>Tip amount calculation</li>
+                                        <li>Total bill with tip</li>
+                                        <li>Tax calculations</li>
+                                        <li>Bill splitting</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Features</h6>
+                                    <ul>
+                                        <li>Quick tip presets</li>
+                                        <li>Per-person calculations</li>
+                                        <li>Detailed breakdown</li>
+                                        <li>Custom tip percentages</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTipCalculator();
+        });
+
+        function initializeTipCalculator() {
+            // Set default tip percentage
+            setTipPercentage(15);
+        }
+
+        function setTipPercentage(percentage) {
+            document.getElementById('tipPercentage').value = percentage;
+            
+            // Update active preset
+            document.querySelectorAll('.tip-preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function calculateTip() {
+            const billAmount = parseFloat(document.getElementById('billAmount').value);
+            const tipPercentage = parseFloat(document.getElementById('tipPercentage').value);
+            const numberOfPeople = parseInt(document.getElementById('numberOfPeople').value) || 1;
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            
+            if (isNaN(billAmount) || billAmount <= 0) {
+                showNotification('Please enter a valid bill amount', 'warning');
+                return;
+            }
+            
+            if (isNaN(tipPercentage) || tipPercentage < 0) {
+                showNotification('Please enter a valid tip percentage', 'warning');
+                return;
+            }
+            
+            if (numberOfPeople < 1) {
+                showNotification('Number of people must be at least 1', 'warning');
+                return;
+            }
+            
+            const result = performTipCalculation(billAmount, tipPercentage, numberOfPeople, taxRate);
+            displayTipResults(result);
+            
+            showNotification('Tip calculated successfully', 'success');
+        }
+
+        function performTipCalculation(billAmount, tipPercentage, numberOfPeople, taxRate) {
+            const taxAmount = (billAmount * taxRate) / 100;
+            const tipAmount = (billAmount * tipPercentage) / 100;
+            const totalAmount = billAmount + taxAmount + tipAmount;
+            
+            const billPerPerson = billAmount / numberOfPeople;
+            const tipPerPerson = tipAmount / numberOfPeople;
+            const taxPerPerson = taxAmount / numberOfPeople;
+            const totalPerPerson = totalAmount / numberOfPeople;
+            
+            return {
+                billAmount,
+                taxAmount,
+                tipAmount,
+                totalAmount,
+                billPerPerson,
+                tipPerPerson,
+                taxPerPerson,
+                totalPerPerson,
+                numberOfPeople
+            };
+        }
+
+        function displayTipResults(result) {
+            // Update main result
+            document.getElementById('totalAmount').textContent = '$' + result.totalAmount.toFixed(2);
+            document.getElementById('tipAmount').textContent = '$' + result.tipAmount.toFixed(2);
+            document.getElementById('perPerson').textContent = '$' + result.totalPerPerson.toFixed(2);
+            
+            // Update breakdown
+            if (document.getElementById('showBreakdown').checked) {
+                document.getElementById('billAmountBreakdown').textContent = '$' + result.billAmount.toFixed(2);
+                document.getElementById('taxAmount').textContent = '$' + result.taxAmount.toFixed(2);
+                document.getElementById('tipAmountBreakdown').textContent = '$' + result.tipAmount.toFixed(2);
+                document.getElementById('totalAmountBreakdown').textContent = '$' + result.totalAmount.toFixed(2);
+                document.getElementById('tipBreakdown').style.display = 'block';
+            } else {
+                document.getElementById('tipBreakdown').style.display = 'none';
+            }
+            
+            // Update bill splitting
+            if (document.getElementById('showSplit').checked) {
+                document.getElementById('billPerPerson').textContent = '$' + result.billPerPerson.toFixed(2);
+                document.getElementById('tipPerPerson').textContent = '$' + result.tipPerPerson.toFixed(2);
+                document.getElementById('taxPerPerson').textContent = '$' + result.taxPerPerson.toFixed(2);
+                document.getElementById('totalPerPerson').textContent = '$' + result.totalPerPerson.toFixed(2);
+                document.getElementById('splitBill').style.display = 'block';
+            } else {
+                document.getElementById('splitBill').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('tipResults').style.display = 'block';
+        }
+
+        function clearTip() {
+            document.getElementById('billAmount').value = '';
+            document.getElementById('tipPercentage').value = '15';
+            document.getElementById('numberOfPeople').value = '1';
+            document.getElementById('taxRate').value = '0';
+            document.getElementById('tipResults').style.display = 'none';
+            document.getElementById('tipStatus').style.display = 'none';
+            
+            // Reset presets
+            document.querySelectorAll('.tip-preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            showNotification('Tip calculator cleared', 'info');
+        }
+    </script>
+</body>
+</html>

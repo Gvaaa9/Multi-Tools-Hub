@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Text Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Generate fancy and stylized text for social media, usernames, and more. Create cool text with different fonts and styles.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-magic me-3"></i>Fancy Text Generator</h1>
+                            <p>Generate fancy and stylized text with different fonts and styles</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="textInput" class="form-label">Enter Your Text *</label>
+                                    <input type="text" class="form-control" id="textInput" placeholder="Type your text here...">
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="styleSelect" class="form-label">Choose Style</label>
+                                    <select class="form-select" id="styleSelect">
+                                        <option value="bold">Bold</option>
+                                        <option value="italic">Italic</option>
+                                        <option value="underline">Underline</option>
+                                        <option value="strikethrough">Strikethrough</option>
+                                        <option value="smallcaps">Small Caps</option>
+                                        <option value="upsidedown">Upside Down</option>
+                                        <option value="bubble">Bubble</option>
+                                        <option value="square">Square</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary" onclick="generateFancyText()">
+                                        <i class="fas fa-magic me-2"></i>Generate Fancy Text
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="fancyText" class="form-label">Fancy Text</label>
+                                    <textarea class="form-control" id="fancyText" rows="4" readonly placeholder="Fancy text will appear here..."></textarea>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-success" onclick="copyFancyText()">
+                                        <i class="fas fa-copy me-2"></i>Copy Text
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textInput = document.getElementById('textInput');
+            const styleSelect = document.getElementById('styleSelect');
+            
+            textInput.addEventListener('input', generateFancyText);
+            styleSelect.addEventListener('change', generateFancyText);
+        });
+
+        function generateFancyText() {
+            const text = document.getElementById('textInput').value;
+            const style = document.getElementById('styleSelect').value;
+            const fancyText = document.getElementById('fancyText');
+
+            if (!text.trim()) {
+                fancyText.value = '';
+                return;
+            }
+
+            const converted = convertToFancyText(text, style);
+            fancyText.value = converted;
+        }
+
+        function convertToFancyText(text, style) {
+            switch (style) {
+                case 'bold':
+                    return text.split('').map(char => char + '\u0302').join('');
+                case 'italic':
+                    return text.split('').map(char => char + '\u0302').join('');
+                case 'underline':
+                    return text.split('').map(char => char + '\u0332').join('');
+                case 'strikethrough':
+                    return text.split('').map(char => char + '\u0336').join('');
+                case 'smallcaps':
+                    return text.toUpperCase();
+                case 'upsidedown':
+                    return text.split('').reverse().join('');
+                case 'bubble':
+                    return text.split('').map(char => 'ⓞ').join('');
+                case 'square':
+                    return text.split('').map(char => '■').join('');
+                default:
+                    return text;
+            }
+        }
+
+        function copyFancyText() {
+            const text = document.getElementById('fancyText').value;
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Fancy text copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy text', 'error');
+                });
+            } else {
+                showNotification('No fancy text to copy', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

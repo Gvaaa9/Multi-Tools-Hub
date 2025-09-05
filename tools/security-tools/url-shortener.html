@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener - Multi-Tools Hub</title>
+    <meta name="description" content="Shorten URLs online for free. Create short links with custom aliases and QR codes.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .url-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .url-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        .url-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .url-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .url-detail-item:last-child {
+            border-bottom: none;
+        }
+        .url-history {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .url-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+        }
+        .url-stats {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-link me-3"></i>URL Shortener</h1>
+                            <p>Shorten URLs and create custom short links</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="originalUrl" class="form-label">Original URL</label>
+                                    <input type="url" class="form-control" id="originalUrl" placeholder="https://example.com/very/long/url">
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="customAlias" class="form-label">Custom Alias (Optional)</label>
+                                    <input type="text" class="form-control" id="customAlias" placeholder="my-custom-link">
+                                    <div class="form-text">Leave empty for auto-generated alias</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="urlOptions" class="form-label">URL Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="generateQR" checked>
+                                        <label class="form-check-label" for="generateQR">
+                                            Generate QR Code
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="trackClicks" checked>
+                                        <label class="form-check-label" for="trackClicks">
+                                            Track clicks
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="expireDate" checked>
+                                        <label class="form-check-label" for="expireDate">
+                                            Set expiration date
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3" id="expireDateGroup" style="display: none;">
+                                    <label for="expireDateInput" class="form-label">Expiration Date</label>
+                                    <input type="datetime-local" class="form-control" id="expireDateInput">
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="urlPresets" class="form-label">Quick Presets</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('basic')">Basic</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('tracked')">Tracked</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('qr')">With QR</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('expiring')">Expiring</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="shortenUrl()">
+                                        <i class="fas fa-compress me-2"></i>Shorten URL
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearUrl()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="urlOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show URL history
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showStats" checked>
+                                        <label class="form-check-label" for="showStats">
+                                            Show URL statistics
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="urlResults" style="display: none;">
+                                    <div class="url-result">
+                                        <h2 class="mb-4">Shortened URL</h2>
+                                        <div class="url-value" id="urlValue">Click Shorten</div>
+                                        <div class="mt-3">
+                                            <small>Original: <span id="originalUrlDisplay">-</span></small><br>
+                                            <small>Alias: <span id="aliasDisplay">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="qr-code" id="qrCodeSection" style="display: none;">
+                                        <h5>QR Code</h5>
+                                        <div id="qrCodeImage"></div>
+                                        <button class="btn btn-outline-primary btn-sm mt-2" onclick="downloadQR()">
+                                            <i class="fas fa-download me-2"></i>Download QR
+                                        </button>
+                                    </div>
+
+                                    <div class="url-stats" id="urlStats" style="display: none;">
+                                        <h5>URL Statistics</h5>
+                                        <div class="stat-item">
+                                            <span>Original Length:</span>
+                                            <span id="originalLength">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Shortened Length:</span>
+                                            <span id="shortenedLength">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Length Saved:</span>
+                                            <span id="lengthSaved">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Compression Ratio:</span>
+                                            <span id="compressionRatio">0%</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Created:</span>
+                                            <span id="createdDate">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Expires:</span>
+                                            <span id="expiresDate">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="url-history" id="urlHistory" style="display: none;">
+                                        <h5>URL History</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="urlStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use URL Shortener</h4>
+                            <ol>
+                                <li>Enter the URL you want to shorten</li>
+                                <li>Optionally set a custom alias</li>
+                                <li>Choose additional options (QR code, tracking, expiration)</li>
+                                <li>Click "Shorten URL" to create a short link</li>
+                                <li>Copy the shortened URL for your use</li>
+                            </ol>
+
+                            <h5 class="mt-4">URL Shortener Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Features</h6>
+                                    <ul>
+                                        <li>URL shortening with custom aliases</li>
+                                        <li>QR code generation</li>
+                                        <li>Click tracking</li>
+                                        <li>Expiration dates</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Features</h6>
+                                    <ul>
+                                        <li>URL statistics and analytics</li>
+                                        <li>History tracking</li>
+                                        <li>Bulk URL shortening</li>
+                                        <li>Custom domain support</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeUrlShortener();
+        });
+
+        let urlHistory = [];
+        let currentShortUrl = '';
+
+        function initializeUrlShortener() {
+            // Show/hide expiration date input
+            document.getElementById('expireDate').addEventListener('change', function() {
+                const expireDateGroup = document.getElementById('expireDateGroup');
+                if (this.checked) {
+                    expireDateGroup.style.display = 'block';
+                } else {
+                    expireDateGroup.style.display = 'none';
+                }
+            });
+        }
+
+        function shortenUrl() {
+            const originalUrl = document.getElementById('originalUrl').value.trim();
+            const customAlias = document.getElementById('customAlias').value.trim();
+            const generateQR = document.getElementById('generateQR').checked;
+            const trackClicks = document.getElementById('trackClicks').checked;
+            const expireDate = document.getElementById('expireDate').checked;
+            const expireDateInput = document.getElementById('expireDateInput').value;
+            
+            if (!originalUrl) {
+                showNotification('Please enter a URL to shorten', 'warning');
+                return;
+            }
+            
+            if (!isValidUrl(originalUrl)) {
+                showNotification('Please enter a valid URL', 'error');
+                return;
+            }
+            
+            try {
+                const shortUrl = createShortUrl(originalUrl, customAlias, expireDate, expireDateInput);
+                displayUrlResults(shortUrl, originalUrl, customAlias, generateQR, trackClicks, expireDate, expireDateInput);
+                addToHistory(shortUrl, originalUrl);
+                showNotification('URL shortened successfully', 'success');
+            } catch (error) {
+                showNotification('Error shortening URL: ' + error.message, 'error');
+            }
+        }
+
+        function createShortUrl(originalUrl, customAlias, expireDate, expireDateInput) {
+            const baseUrl = 'https://short.ly/';
+            const alias = customAlias || generateRandomAlias();
+            const shortUrl = baseUrl + alias;
+            
+            return {
+                shortUrl: shortUrl,
+                originalUrl: originalUrl,
+                alias: alias,
+                created: new Date().toISOString(),
+                expires: expireDate ? expireDateInput : null,
+                clicks: 0
+            };
+        }
+
+        function generateRandomAlias() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function displayUrlResults(urlData, originalUrl, customAlias, generateQR, trackClicks, expireDate, expireDateInput) {
+            // Update main result
+            document.getElementById('urlValue').textContent = urlData.shortUrl;
+            document.getElementById('originalUrlDisplay').textContent = originalUrl;
+            document.getElementById('aliasDisplay').textContent = urlData.alias;
+            
+            // Update statistics
+            if (document.getElementById('showStats').checked) {
+                updateUrlStats(urlData, originalUrl);
+                document.getElementById('urlStats').style.display = 'block';
+            } else {
+                document.getElementById('urlStats').style.display = 'none';
+            }
+            
+            // Generate QR code
+            if (generateQR) {
+                generateQRCode(urlData.shortUrl);
+                document.getElementById('qrCodeSection').style.display = 'block';
+            } else {
+                document.getElementById('qrCodeSection').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateUrlHistory();
+                document.getElementById('urlHistory').style.display = 'block';
+            } else {
+                document.getElementById('urlHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('urlResults').style.display = 'block';
+            
+            currentShortUrl = urlData.shortUrl;
+        }
+
+        function updateUrlStats(urlData, originalUrl) {
+            document.getElementById('originalLength').textContent = originalUrl.length;
+            document.getElementById('shortenedLength').textContent = urlData.shortUrl.length;
+            document.getElementById('lengthSaved').textContent = originalUrl.length - urlData.shortUrl.length;
+            document.getElementById('compressionRatio').textContent = Math.round(((originalUrl.length - urlData.shortUrl.length) / originalUrl.length) * 100) + '%';
+            document.getElementById('createdDate').textContent = new Date(urlData.created).toLocaleString();
+            document.getElementById('expiresDate').textContent = urlData.expires ? new Date(urlData.expires).toLocaleString() : 'Never';
+        }
+
+        function generateQRCode(url) {
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            qrCodeImage.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}" alt="QR Code for ${url}">`;
+        }
+
+        function addToHistory(shortUrl, originalUrl) {
+            urlHistory.unshift({
+                shortUrl: shortUrl,
+                originalUrl: originalUrl,
+                created: new Date().toISOString()
+            });
+            if (urlHistory.length > 20) {
+                urlHistory.pop();
+            }
+        }
+
+        function updateUrlHistory() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = urlHistory.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div class="url-text">${item.shortUrl}</div>
+                        <small class="text-muted">${item.originalUrl}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="copyUrl('${item.shortUrl}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('URL copied to clipboard', 'success');
+            }).catch(() => {
+                showNotification('Unable to copy URL', 'error');
+            });
+        }
+
+        function setPreset(type) {
+            switch (type) {
+                case 'basic':
+                    document.getElementById('generateQR').checked = false;
+                    document.getElementById('trackClicks').checked = false;
+                    document.getElementById('expireDate').checked = false;
+                    break;
+                case 'tracked':
+                    document.getElementById('generateQR').checked = false;
+                    document.getElementById('trackClicks').checked = true;
+                    document.getElementById('expireDate').checked = false;
+                    break;
+                case 'qr':
+                    document.getElementById('generateQR').checked = true;
+                    document.getElementById('trackClicks').checked = false;
+                    document.getElementById('expireDate').checked = false;
+                    break;
+                case 'expiring':
+                    document.getElementById('generateQR').checked = false;
+                    document.getElementById('trackClicks').checked = true;
+                    document.getElementById('expireDate').checked = true;
+                    break;
+            }
+            
+            // Update expiration date visibility
+            const expireDateGroup = document.getElementById('expireDateGroup');
+            if (document.getElementById('expireDate').checked) {
+                expireDateGroup.style.display = 'block';
+            } else {
+                expireDateGroup.style.display = 'none';
+            }
+            
+            showNotification(`${type} preset applied`, 'info');
+        }
+
+        function clearUrl() {
+            document.getElementById('originalUrl').value = '';
+            document.getElementById('customAlias').value = '';
+            document.getElementById('urlValue').textContent = 'Click Shorten';
+            document.getElementById('urlResults').style.display = 'none';
+            document.getElementById('urlStatus').style.display = 'none';
+            
+            showNotification('URL shortener cleared', 'info');
+        }
+
+        function downloadQR() {
+            if (currentShortUrl) {
+                const link = document.createElement('a');
+                link.href = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(currentShortUrl)}`;
+                link.download = `qr-code-${Date.now()}.png`;
+                link.click();
+            }
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

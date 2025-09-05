@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlink Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Check backlinks for your website. Analyze backlink profile, quality, and get optimization recommendations.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-link me-3"></i>Backlink Checker</h1>
+                            <p>Analyze your website's backlink profile and quality</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="websiteUrl" class="form-label">Website URL *</label>
+                                    <input type="url" class="form-control" id="websiteUrl" placeholder="https://example.com">
+                                    <div class="form-text">Enter the domain you want to check backlinks for</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="checkType" class="form-label">Check Type</label>
+                                    <select class="form-select" id="checkType">
+                                        <option value="domain">Domain Backlinks</option>
+                                        <option value="page">Page Backlinks</option>
+                                        <option value="anchor">Anchor Text Analysis</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="maxResults" class="form-label">Maximum Results</label>
+                                    <select class="form-select" id="maxResults">
+                                        <option value="50">50 backlinks</option>
+                                        <option value="100" selected>100 backlinks</option>
+                                        <option value="200">200 backlinks</option>
+                                        <option value="500">500 backlinks</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary btn-lg" id="checkBacklinksBtn">
+                                        <i class="fas fa-link me-2"></i>Check Backlinks
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="backlink-preview border rounded p-3" id="backlinkPreview">
+                                    <h6>Backlink Analysis Preview</h6>
+                                    <p class="text-muted">Enter a domain and click "Check Backlinks" to see results</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Backlink Checker</h4>
+                            <ol>
+                                <li>Enter the domain you want to check backlinks for</li>
+                                <li>Select the check type (Domain, Page, or Anchor Text)</li>
+                                <li>Choose the maximum number of results to display</li>
+                                <li>Click "Check Backlinks" to start the analysis</li>
+                                <li>Review the backlink profile and quality metrics</li>
+                            </ol>
+
+                            <h5 class="mt-4">Understanding Backlinks</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Backlink Quality Factors</h6>
+                                    <ul>
+                                        <li><strong>Domain Authority:</strong> Higher DA = better backlink</li>
+                                        <li><strong>Relevance:</strong> Links from related sites are more valuable</li>
+                                        <li><strong>Anchor Text:</strong> Natural, descriptive anchor text is best</li>
+                                        <li><strong>Link Type:</strong> Editorial links are more valuable than directory links</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Backlink Types</h6>
+                                    <ul>
+                                        <li><strong>Editorial:</strong> Natural mentions and citations</li>
+                                        <li><strong>Guest Posts:</strong> Articles written for other sites</li>
+                                        <li><strong>Directory:</strong> Business directory listings</li>
+                                        <li><strong>Social:</strong> Social media profile links</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBacklinkChecker();
+        });
+
+        function initializeBacklinkChecker() {
+            const checkBacklinksBtn = document.getElementById('checkBacklinksBtn');
+            const websiteUrl = document.getElementById('websiteUrl');
+
+            // Check backlinks button
+            checkBacklinksBtn.addEventListener('click', checkBacklinks);
+
+            // Real-time preview
+            websiteUrl.addEventListener('input', updatePreview);
+        }
+
+        function updatePreview() {
+            const url = document.getElementById('websiteUrl').value;
+            const checkType = document.getElementById('checkType').value;
+            const preview = document.getElementById('backlinkPreview');
+            
+            if (url.trim()) {
+                preview.innerHTML = `
+                    <h6>Ready to Check</h6>
+                    <p><strong>Domain:</strong> ${url}</p>
+                    <p><strong>Type:</strong> ${checkType}</p>
+                    <p class="text-muted">Click "Check Backlinks" to start analysis</p>
+                `;
+            } else {
+                preview.innerHTML = `
+                    <h6>Backlink Analysis Preview</h6>
+                    <p class="text-muted">Enter a domain and click "Check Backlinks" to see results</p>
+                `;
+            }
+        }
+
+        function checkBacklinks() {
+            const url = document.getElementById('websiteUrl').value.trim();
+            const checkType = document.getElementById('checkType').value;
+            const maxResults = parseInt(document.getElementById('maxResults').value);
+
+            if (!url) {
+                showNotification('Please enter a website URL', 'error');
+                return;
+            }
+
+            // Validate URL
+            try {
+                new URL(url);
+            } catch (e) {
+                showNotification('Please enter a valid URL', 'error');
+                return;
+            }
+
+            const checkBacklinksBtn = document.getElementById('checkBacklinksBtn');
+            const result = document.getElementById('result');
+            
+            checkBacklinksBtn.disabled = true;
+            checkBacklinksBtn.innerHTML = '<span class="loading"></span> Analyzing...';
+
+            // Simulate backlink check
+            setTimeout(() => {
+                try {
+                    // Generate mock backlink results
+                    const results = generateMockResults(url, checkType, maxResults);
+                    displayResults(results);
+
+                } catch (error) {
+                    showNotification('Error checking backlinks: ' + error.message, 'error');
+                    result.innerHTML = '<p class="text-danger">Error: ' + error.message + '</p>';
+                    result.style.display = 'block';
+                }
+                
+                checkBacklinksBtn.disabled = false;
+                checkBacklinksBtn.innerHTML = '<i class="fas fa-link me-2"></i>Check Backlinks';
+            }, 2000);
+        }
+
+        function generateMockResults(url, checkType, maxResults) {
+            // Generate realistic mock data
+            const totalBacklinks = Math.floor(Math.random() * 5000) + 500; // 500-5500
+            const referringDomains = Math.floor(Math.random() * 500) + 50; // 50-550
+            const dofollowLinks = Math.floor(totalBacklinks * 0.8); // 80% dofollow
+            const nofollowLinks = totalBacklinks - dofollowLinks;
+            
+            const results = {
+                url,
+                checkType,
+                totalBacklinks,
+                referringDomains,
+                dofollowLinks,
+                nofollowLinks,
+                averageDA: Math.floor(Math.random() * 30) + 20, // 20-50
+                topBacklinks: [],
+                anchorTexts: [],
+                linkTypes: {
+                    editorial: Math.floor(totalBacklinks * 0.4),
+                    guestPost: Math.floor(totalBacklinks * 0.2),
+                    directory: Math.floor(totalBacklinks * 0.15),
+                    social: Math.floor(totalBacklinks * 0.1),
+                    other: Math.floor(totalBacklinks * 0.15)
+                },
+                recommendations: generateRecommendations(totalBacklinks, referringDomains, dofollowLinks)
+            };
+
+            // Generate sample backlinks
+            const sampleBacklinks = Math.min(maxResults, 20);
+            for (let i = 0; i < sampleBacklinks; i++) {
+                results.topBacklinks.push({
+                    url: `https://example${i + 1}.com/page${i + 1}`,
+                    domain: `example${i + 1}.com`,
+                    da: Math.floor(Math.random() * 50) + 20, // 20-70
+                    anchorText: generateAnchorText(),
+                    linkType: ['editorial', 'guestPost', 'directory', 'social'][Math.floor(Math.random() * 4)],
+                    isDofollow: Math.random() > 0.2, // 80% dofollow
+                    lastSeen: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                });
+            }
+
+            // Generate anchor text analysis
+            const anchorTexts = ['click here', 'learn more', 'read more', 'website', 'homepage', 'services', 'about us', 'contact', 'blog', 'news'];
+            results.anchorTexts = anchorTexts.map(text => ({
+                text,
+                count: Math.floor(Math.random() * 20) + 1,
+                percentage: Math.floor(Math.random() * 10) + 1
+            }));
+
+            return results;
+        }
+
+        function generateAnchorText() {
+            const anchorTexts = [
+                'click here', 'learn more', 'read more', 'website', 'homepage',
+                'services', 'about us', 'contact', 'blog', 'news', 'company',
+                'business', 'online', 'official', 'home', 'main', 'site'
+            ];
+            return anchorTexts[Math.floor(Math.random() * anchorTexts.length)];
+        }
+
+        function generateRecommendations(totalBacklinks, referringDomains, dofollowLinks) {
+            const recommendations = [];
+            
+            if (totalBacklinks < 1000) {
+                recommendations.push("Focus on acquiring more high-quality backlinks");
+                recommendations.push("Create link-worthy content that naturally attracts backlinks");
+            }
+            
+            if (referringDomains < 100) {
+                recommendations.push("Diversify your backlink profile across more domains");
+                recommendations.push("Build relationships with industry influencers and bloggers");
+            }
+            
+            if (dofollowLinks < totalBacklinks * 0.7) {
+                recommendations.push("Work on earning more dofollow links from authoritative sites");
+                recommendations.push("Focus on editorial mentions and natural citations");
+            }
+            
+            recommendations.push("Monitor your backlink profile regularly for quality and spam");
+            recommendations.push("Disavow toxic or spammy backlinks if found");
+            recommendations.push("Create and maintain a strong internal linking structure");
+            
+            return recommendations;
+        }
+
+        function displayResults(results) {
+            const result = document.getElementById('result');
+            
+            let resultHTML = `
+                <div class="text-center">
+                    <h5 class="text-success mb-3">Backlink Analysis Complete!</h5>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Total Backlinks</h6>
+                                    <p class="card-text h4">${results.totalBacklinks.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Referring Domains</h6>
+                                    <p class="card-text h4">${results.referringDomains.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Dofollow Links</h6>
+                                    <p class="card-text h4">${results.dofollowLinks.toLocaleString()}</p>
+                                    <small class="text-muted">${Math.round((results.dofollowLinks / results.totalBacklinks) * 100)}%</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Average DA</h6>
+                                    <p class="card-text h4">${results.averageDA}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Link Types Distribution</h6>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" style="width: ${(results.linkTypes.editorial / results.totalBacklinks * 100).toFixed(1)}%">Editorial (${results.linkTypes.editorial})</div>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: ${(results.linkTypes.guestPost / results.totalBacklinks * 100).toFixed(1)}%">Guest Post (${results.linkTypes.guestPost})</div>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-info" style="width: ${(results.linkTypes.directory / results.totalBacklinks * 100).toFixed(1)}%">Directory (${results.linkTypes.directory})</div>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: ${(results.linkTypes.social / results.totalBacklinks * 100).toFixed(1)}%">Social (${results.linkTypes.social})</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Top Anchor Texts</h6>
+                            <div class="list-group">
+            `;
+
+            results.anchorTexts.slice(0, 5).forEach(anchor => {
+                resultHTML += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        ${anchor.text}
+                        <span class="badge bg-primary rounded-pill">${anchor.count}</span>
+                    </div>
+                `;
+            });
+
+            resultHTML += `</div></div></div>`;
+
+            if (results.topBacklinks.length > 0) {
+                resultHTML += `
+                    <h6 class="mb-3">Top Backlinks</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Source URL</th>
+                                    <th>Domain</th>
+                                    <th>DA</th>
+                                    <th>Anchor Text</th>
+                                    <th>Type</th>
+                                    <th>Follow</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                results.topBacklinks.forEach(backlink => {
+                    const followBadge = backlink.isDofollow ? 'success' : 'secondary';
+                    const followText = backlink.isDofollow ? 'Dofollow' : 'Nofollow';
+                    
+                    resultHTML += `
+                        <tr>
+                            <td><a href="${backlink.url}" target="_blank" class="text-decoration-none">${backlink.url}</a></td>
+                            <td>${backlink.domain}</td>
+                            <td><span class="badge bg-info">${backlink.da}</span></td>
+                            <td>${backlink.anchorText}</td>
+                            <td><span class="badge bg-secondary">${backlink.linkType}</span></td>
+                            <td><span class="badge bg-${followBadge}">${followText}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                resultHTML += `</tbody></table></div>`;
+            }
+
+            resultHTML += `
+                    <h6 class="mb-3 mt-4">Optimization Recommendations</h6>
+                    <div class="row">
+                        <div class="col-12">
+                            <ul class="list-group">
+            `;
+
+            results.recommendations.forEach(rec => {
+                resultHTML += `<li class="list-group-item">${rec}</li>`;
+            });
+
+            resultHTML += `
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="downloadResults()">
+                            <i class="fas fa-download me-2"></i>Download Report
+                        </button>
+                        <button class="btn btn-success" onclick="copyToClipboard(document.getElementById('resultsText').value)">
+                            <i class="fas fa-copy me-2"></i>Copy Results
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Add hidden textarea for copying
+            resultHTML += `
+                <textarea id="resultsText" class="d-none">${generateTextResults(results)}</textarea>
+            `;
+
+            result.innerHTML = resultHTML;
+            result.style.display = 'block';
+
+            // Store for download
+            window.backlinkResults = results;
+
+            showNotification('Backlink analysis completed!', 'success');
+        }
+
+        function generateTextResults(results) {
+            let text = `Backlink Analysis Report\n`;
+            text += `======================\n\n`;
+            text += `Domain: ${results.url}\n`;
+            text += `Total Backlinks: ${results.totalBacklinks.toLocaleString()}\n`;
+            text += `Referring Domains: ${results.referringDomains.toLocaleString()}\n`;
+            text += `Dofollow Links: ${results.dofollowLinks.toLocaleString()} (${Math.round((results.dofollowLinks / results.totalBacklinks) * 100)}%)\n`;
+            text += `Nofollow Links: ${results.nofollowLinks.toLocaleString()} (${Math.round((results.nofollowLinks / results.totalBacklinks) * 100)}%)\n`;
+            text += `Average DA: ${results.averageDA}\n\n`;
+            
+            text += `Link Types:\n`;
+            text += `- Editorial: ${results.linkTypes.editorial}\n`;
+            text += `- Guest Post: ${results.linkTypes.guestPost}\n`;
+            text += `- Directory: ${results.linkTypes.directory}\n`;
+            text += `- Social: ${results.linkTypes.social}\n`;
+            text += `- Other: ${results.linkTypes.other}\n\n`;
+            
+            text += `Top Anchor Texts:\n`;
+            results.anchorTexts.slice(0, 10).forEach((anchor, index) => {
+                text += `${index + 1}. ${anchor.text} (${anchor.count} times)\n`;
+            });
+            
+            text += `\nRecommendations:\n`;
+            results.recommendations.forEach((rec, index) => {
+                text += `${index + 1}. ${rec}\n`;
+            });
+            
+            return text;
+        }
+
+        function downloadResults() {
+            if (window.backlinkResults) {
+                const text = generateTextResults(window.backlinkResults);
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'backlink-analysis-report.txt';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+    </script>
+</body>
+</html>

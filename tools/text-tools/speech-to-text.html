@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech to Text - Multi-Tools Hub</title>
+    <meta name="description" content="Convert speech to text online for free. Use your microphone to transcribe audio to text.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-microphone me-3"></i>Speech to Text</h1>
+                            <p>Convert speech to text using your microphone</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label for="textOutput" class="form-label">Transcribed Text</label>
+                                    <textarea class="form-control" id="textOutput" rows="8" readonly placeholder="Transcribed text will appear here..."></textarea>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary" onclick="startListening()">
+                                        <i class="fas fa-microphone me-2"></i>Start Listening
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="stopListening()">
+                                        <i class="fas fa-stop me-2"></i>Stop
+                                    </button>
+                                    <button class="btn btn-success" onclick="copyText()">
+                                        <i class="fas fa-copy me-2"></i>Copy Text
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-preview border rounded p-3" id="statsPreview">
+                                    <h6>Speech to Text</h6>
+                                    <p class="text-muted">Click "Start Listening" to begin transcription</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        let recognition = null;
+        let isListening = false;
+
+        function startListening() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Speech recognition not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = function() {
+                isListening = true;
+                showNotification('Listening... Speak now', 'success');
+            };
+
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                document.getElementById('textOutput').value = transcript;
+            };
+
+            recognition.onerror = function(event) {
+                showNotification('Speech recognition error: ' + event.error, 'error');
+                isListening = false;
+            };
+
+            recognition.onend = function() {
+                isListening = false;
+                showNotification('Speech recognition ended', 'info');
+            };
+
+            recognition.start();
+        }
+
+        function stopListening() {
+            if (recognition && isListening) {
+                recognition.stop();
+                isListening = false;
+            }
+        }
+
+        function copyText() {
+            const text = document.getElementById('textOutput').value;
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Text copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy text', 'error');
+                });
+            } else {
+                showNotification('No text to copy', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

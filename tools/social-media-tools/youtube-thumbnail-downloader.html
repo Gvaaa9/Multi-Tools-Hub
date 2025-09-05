@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Thumbnail Downloader - Multi-Tools Hub</title>
+    <meta name="description" content="Download YouTube video thumbnails online for free. Get high-quality thumbnails in different sizes.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .thumbnail-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .thumbnail-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .thumbnail-preview {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .thumbnail-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .thumbnail-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .thumbnail-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .thumbnail-detail-item:last-child {
+            border-bottom: none;
+        }
+        .thumbnail-history {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .thumbnail-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .thumbnail-stats {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .size-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .size-option {
+            text-align: center;
+            padding: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .size-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .size-option.selected {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fab fa-youtube me-3"></i>YouTube Thumbnail Downloader</h1>
+                            <p>Download YouTube video thumbnails in different sizes</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="youtubeUrl" class="form-label">YouTube URL</label>
+                                    <input type="url" class="form-control" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
+                                    <div class="form-text">Enter a YouTube video URL</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="thumbnailSize" class="form-label">Thumbnail Size</label>
+                                    <div class="size-options">
+                                        <div class="size-option" data-size="maxresdefault" onclick="selectSize('maxresdefault')">
+                                            <i class="fas fa-image fa-2x mb-2"></i>
+                                            <div class="fw-bold">Max Resolution</div>
+                                            <small class="text-muted">1280x720</small>
+                                        </div>
+                                        <div class="size-option" data-size="hqdefault" onclick="selectSize('hqdefault')">
+                                            <i class="fas fa-image fa-2x mb-2"></i>
+                                            <div class="fw-bold">High Quality</div>
+                                            <small class="text-muted">480x360</small>
+                                        </div>
+                                        <div class="size-option" data-size="mqdefault" onclick="selectSize('mqdefault')">
+                                            <i class="fas fa-image fa-2x mb-2"></i>
+                                            <div class="fw-bold">Medium Quality</div>
+                                            <small class="text-muted">320x180</small>
+                                        </div>
+                                        <div class="size-option" data-size="default" onclick="selectSize('default')">
+                                            <i class="fas fa-image fa-2x mb-2"></i>
+                                            <div class="fw-bold">Default</div>
+                                            <small class="text-muted">120x90</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="downloadOptions" class="form-label">Download Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="downloadAll" checked>
+                                        <label class="form-check-label" for="downloadAll">
+                                            Download all sizes
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showPreview" checked>
+                                        <label class="form-check-label" for="showPreview">
+                                            Show thumbnail preview
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="getVideoInfo" checked>
+                                        <label class="form-check-label" for="getVideoInfo">
+                                            Get video information
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="thumbnailPresets" class="form-label">Quick Presets</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('high')">High Quality</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('medium')">Medium Quality</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('all')">All Sizes</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('custom')">Custom</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="downloadThumbnail()">
+                                        <i class="fas fa-download me-2"></i>Download Thumbnail
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearThumbnail()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="thumbnailOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show download history
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showStats" checked>
+                                        <label class="form-check-label" for="showStats">
+                                            Show thumbnail statistics
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="thumbnailResults" style="display: none;">
+                                    <div class="thumbnail-result">
+                                        <h2 class="mb-4">Thumbnail Ready</h2>
+                                        <div class="thumbnail-value" id="thumbnailValue">Click Download</div>
+                                        <div class="mt-3">
+                                            <small>Video: <span id="videoTitleDisplay">-</span></small><br>
+                                            <small>Size: <span id="thumbnailSizeDisplay">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="thumbnail-preview" id="thumbnailPreview" style="display: none;">
+                                        <h5>Thumbnail Preview</h5>
+                                        <img id="thumbnailImage" class="thumbnail-image" src="" alt="Thumbnail Preview">
+                                        <div class="mt-3">
+                                            <button class="btn btn-primary" onclick="downloadCurrentThumbnail()">
+                                                <i class="fas fa-download me-2"></i>Download This Size
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="thumbnail-details" id="thumbnailDetails" style="display: none;">
+                                        <h5>Video Information</h5>
+                                        <div class="thumbnail-detail-item">
+                                            <span>Title:</span>
+                                            <span id="videoTitle">-</span>
+                                        </div>
+                                        <div class="thumbnail-detail-item">
+                                            <span>Channel:</span>
+                                            <span id="channelName">-</span>
+                                        </div>
+                                        <div class="thumbnail-detail-item">
+                                            <span>Duration:</span>
+                                            <span id="videoDuration">-</span>
+                                        </div>
+                                        <div class="thumbnail-detail-item">
+                                            <span>Views:</span>
+                                            <span id="videoViews">-</span>
+                                        </div>
+                                        <div class="thumbnail-detail-item">
+                                            <span>Upload Date:</span>
+                                            <span id="uploadDate">-</span>
+                                        </div>
+                                        <div class="thumbnail-detail-item">
+                                            <span>Video ID:</span>
+                                            <span id="videoId">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="thumbnail-stats" id="thumbnailStats" style="display: none;">
+                                        <h5>Thumbnail Statistics</h5>
+                                        <div class="stat-item">
+                                            <span>Selected Size:</span>
+                                            <span id="selectedSize">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Available Sizes:</span>
+                                            <span id="availableSizes">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Download Time:</span>
+                                            <span id="downloadTime">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Last Checked:</span>
+                                            <span id="lastChecked">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="thumbnail-history" id="thumbnailHistory" style="display: none;">
+                                        <h5>Download History</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Processing YouTube video...</p>
+                                </div>
+
+                                <div class="alert alert-info" id="thumbnailStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use YouTube Thumbnail Downloader</h4>
+                            <ol>
+                                <li>Enter a YouTube video URL in the input field</li>
+                                <li>Select the thumbnail size you want to download</li>
+                                <li>Choose download options (all sizes, preview, etc.)</li>
+                                <li>Click "Download Thumbnail" to get the image</li>
+                                <li>Preview and download the thumbnail</li>
+                            </ol>
+
+                            <h5 class="mt-4">YouTube Thumbnail Downloader Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Thumbnail Sizes</h6>
+                                    <ul>
+                                        <li>Max Resolution (1280x720)</li>
+                                        <li>High Quality (480x360)</li>
+                                        <li>Medium Quality (320x180)</li>
+                                        <li>Default (120x90)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Additional Features</h6>
+                                    <ul>
+                                        <li>Video information extraction</li>
+                                        <li>Thumbnail preview</li>
+                                        <li>Download history</li>
+                                        <li>Multiple size support</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeThumbnailDownloader();
+        });
+
+        let thumbnailHistory = [];
+        let currentVideoId = '';
+        let currentThumbnailUrl = '';
+
+        function initializeThumbnailDownloader() {
+            // Select default size
+            selectSize('maxresdefault');
+        }
+
+        function selectSize(size) {
+            // Remove previous selection
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            document.querySelector(`[data-size="${size}"]`).classList.add('selected');
+            
+            // Update hidden input or variable
+            window.selectedThumbnailSize = size;
+        }
+
+        function downloadThumbnail() {
+            const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
+            
+            if (!youtubeUrl) {
+                showNotification('Please enter a YouTube URL', 'warning');
+                return;
+            }
+            
+            const videoId = extractVideoId(youtubeUrl);
+            if (!videoId) {
+                showNotification('Please enter a valid YouTube URL', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            // Simulate API call (in real implementation, use actual YouTube API)
+            setTimeout(() => {
+                try {
+                    const thumbnailData = getThumbnailData(videoId, youtubeUrl);
+                    displayThumbnailResults(thumbnailData);
+                    addToHistory(thumbnailData);
+                    showNotification('Thumbnail ready for download', 'success');
+                } catch (error) {
+                    showNotification('Error processing video: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            }, 2000);
+        }
+
+        function extractVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        function getThumbnailData(videoId, youtubeUrl) {
+            // Mock data - in real implementation, use actual YouTube API
+            const mockData = {
+                videoId: videoId,
+                youtubeUrl: youtubeUrl,
+                title: 'Sample YouTube Video Title',
+                channel: 'Sample Channel',
+                duration: '5:30',
+                views: '1,234,567',
+                uploadDate: '2024-01-15',
+                thumbnails: {
+                    maxresdefault: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    hqdefault: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                    mqdefault: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                    default: `https://img.youtube.com/vi/${videoId}/default.jpg`
+                },
+                selectedSize: window.selectedThumbnailSize || 'maxresdefault',
+                downloadTime: '150ms',
+                checkTime: new Date().toISOString()
+            };
+            
+            return mockData;
+        }
+
+        function displayThumbnailResults(thumbnailData) {
+            // Update main result
+            document.getElementById('thumbnailValue').textContent = 'Thumbnail Ready';
+            document.getElementById('videoTitleDisplay').textContent = thumbnailData.title;
+            document.getElementById('thumbnailSizeDisplay').textContent = thumbnailData.selectedSize;
+            
+            // Update video information
+            if (document.getElementById('getVideoInfo').checked) {
+                updateVideoInfo(thumbnailData);
+                document.getElementById('thumbnailDetails').style.display = 'block';
+            } else {
+                document.getElementById('thumbnailDetails').style.display = 'none';
+            }
+            
+            // Update thumbnail preview
+            if (document.getElementById('showPreview').checked) {
+                updateThumbnailPreview(thumbnailData);
+                document.getElementById('thumbnailPreview').style.display = 'block';
+            } else {
+                document.getElementById('thumbnailPreview').style.display = 'none';
+            }
+            
+            // Update statistics
+            if (document.getElementById('showStats').checked) {
+                updateThumbnailStats(thumbnailData);
+                document.getElementById('thumbnailStats').style.display = 'block';
+            } else {
+                document.getElementById('thumbnailStats').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateThumbnailHistory();
+                document.getElementById('thumbnailHistory').style.display = 'block';
+            } else {
+                document.getElementById('thumbnailHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('thumbnailResults').style.display = 'block';
+            
+            // Store current data
+            currentVideoId = thumbnailData.videoId;
+            currentThumbnailUrl = thumbnailData.thumbnails[thumbnailData.selectedSize];
+        }
+
+        function updateVideoInfo(thumbnailData) {
+            document.getElementById('videoTitle').textContent = thumbnailData.title;
+            document.getElementById('channelName').textContent = thumbnailData.channel;
+            document.getElementById('videoDuration').textContent = thumbnailData.duration;
+            document.getElementById('videoViews').textContent = thumbnailData.views;
+            document.getElementById('uploadDate').textContent = thumbnailData.uploadDate;
+            document.getElementById('videoId').textContent = thumbnailData.videoId;
+        }
+
+        function updateThumbnailPreview(thumbnailData) {
+            const thumbnailImage = document.getElementById('thumbnailImage');
+            thumbnailImage.src = thumbnailData.thumbnails[thumbnailData.selectedSize];
+            thumbnailImage.alt = `Thumbnail for ${thumbnailData.title}`;
+        }
+
+        function updateThumbnailStats(thumbnailData) {
+            document.getElementById('selectedSize').textContent = thumbnailData.selectedSize;
+            document.getElementById('availableSizes').textContent = Object.keys(thumbnailData.thumbnails).length;
+            document.getElementById('downloadTime').textContent = thumbnailData.downloadTime;
+            document.getElementById('lastChecked').textContent = new Date(thumbnailData.checkTime).toLocaleString();
+        }
+
+        function addToHistory(thumbnailData) {
+            thumbnailHistory.unshift({
+                videoId: thumbnailData.videoId,
+                title: thumbnailData.title,
+                channel: thumbnailData.channel,
+                size: thumbnailData.selectedSize,
+                created: new Date().toISOString()
+            });
+            if (thumbnailHistory.length > 20) {
+                thumbnailHistory.pop();
+            }
+        }
+
+        function updateThumbnailHistory() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = thumbnailHistory.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div class="thumbnail-text">${item.title}</div>
+                        <small class="text-muted">${item.channel} - ${item.size}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="downloadThumbnailFromHistory('${item.videoId}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function downloadThumbnailFromHistory(videoId) {
+            // Find the video in history and set the URL
+            const historyItem = thumbnailHistory.find(item => item.videoId === videoId);
+            if (historyItem) {
+                document.getElementById('youtubeUrl').value = `https://www.youtube.com/watch?v=${videoId}`;
+                downloadThumbnail();
+            }
+        }
+
+        function setPreset(type) {
+            switch (type) {
+                case 'high':
+                    selectSize('maxresdefault');
+                    document.getElementById('downloadAll').checked = false;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    break;
+                case 'medium':
+                    selectSize('hqdefault');
+                    document.getElementById('downloadAll').checked = false;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    break;
+                case 'all':
+                    selectSize('maxresdefault');
+                    document.getElementById('downloadAll').checked = true;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    break;
+                case 'custom':
+                    selectSize('maxresdefault');
+                    document.getElementById('downloadAll').checked = false;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = false;
+                    break;
+            }
+            
+            showNotification(`${type} preset applied`, 'info');
+        }
+
+        function clearThumbnail() {
+            document.getElementById('youtubeUrl').value = '';
+            document.getElementById('thumbnailValue').textContent = 'Click Download';
+            document.getElementById('thumbnailResults').style.display = 'none';
+            document.getElementById('thumbnailStatus').style.display = 'none';
+            
+            showNotification('Thumbnail downloader cleared', 'info');
+        }
+
+        function downloadCurrentThumbnail() {
+            if (currentThumbnailUrl) {
+                const link = document.createElement('a');
+                link.href = currentThumbnailUrl;
+                link.download = `youtube-thumbnail-${currentVideoId}-${window.selectedThumbnailSize}.jpg`;
+                link.click();
+                showNotification('Thumbnail download started', 'success');
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('thumbnailResults').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

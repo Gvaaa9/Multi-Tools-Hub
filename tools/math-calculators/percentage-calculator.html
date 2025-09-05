@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator - Multi-Tools Hub</title>
+    <meta name="description" content="Calculate percentages online for free. Find percentage of a number, percentage change, and more.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .calculator-card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .result-highlight {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-percentage me-3"></i>Percentage Calculator</h1>
+                            <p>Calculate percentages, percentage changes, and more</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="calculator-card">
+                                    <h5 class="mb-3">What is X% of Y?</h5>
+                                    <div class="form-group mb-3">
+                                        <label for="percentage1" class="form-label">Percentage (%)</label>
+                                        <input type="number" class="form-control" id="percentage1" placeholder="Enter percentage">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="number1" class="form-label">Number</label>
+                                        <input type="number" class="form-control" id="number1" placeholder="Enter number">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="calculatePercentage()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate
+                                    </button>
+                                    <div class="result-highlight" id="result1" style="display: none;">
+                                        <strong>Result:</strong> <span id="result1Value"></span>
+                                    </div>
+                                </div>
+
+                                <div class="calculator-card">
+                                    <h5 class="mb-3">X is what % of Y?</h5>
+                                    <div class="form-group mb-3">
+                                        <label for="number2" class="form-label">First Number</label>
+                                        <input type="number" class="form-control" id="number2" placeholder="Enter first number">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="number3" class="form-label">Second Number</label>
+                                        <input type="number" class="form-control" id="number3" placeholder="Enter second number">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="calculatePercentageOf()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate
+                                    </button>
+                                    <div class="result-highlight" id="result2" style="display: none;">
+                                        <strong>Result:</strong> <span id="result2Value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="calculator-card">
+                                    <h5 class="mb-3">Percentage Change</h5>
+                                    <div class="form-group mb-3">
+                                        <label for="oldValue" class="form-label">Old Value</label>
+                                        <input type="number" class="form-control" id="oldValue" placeholder="Enter old value">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="newValue" class="form-label">New Value</label>
+                                        <input type="number" class="form-control" id="newValue" placeholder="Enter new value">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="calculatePercentageChange()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate
+                                    </button>
+                                    <div class="result-highlight" id="result3" style="display: none;">
+                                        <strong>Result:</strong> <span id="result3Value"></span>
+                                    </div>
+                                </div>
+
+                                <div class="calculator-card">
+                                    <h5 class="mb-3">Increase/Decrease by %</h5>
+                                    <div class="form-group mb-3">
+                                        <label for="baseNumber" class="form-label">Base Number</label>
+                                        <input type="number" class="form-control" id="baseNumber" placeholder="Enter base number">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="changePercentage" class="form-label">Percentage Change</label>
+                                        <input type="number" class="form-control" id="changePercentage" placeholder="Enter percentage change">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="changeType" class="form-label">Change Type</label>
+                                        <select class="form-select" id="changeType">
+                                            <option value="increase">Increase</option>
+                                            <option value="decrease">Decrease</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="calculateIncreaseDecrease()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate
+                                    </button>
+                                    <div class="result-highlight" id="result4" style="display: none;">
+                                        <strong>Result:</strong> <span id="result4Value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mb-3">
+                            <button class="btn btn-outline-secondary" onclick="clearAll()">
+                                <i class="fas fa-trash me-2"></i>Clear All
+                            </button>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Percentage Calculator</h4>
+                            <ol>
+                                <li>Choose the type of percentage calculation you need</li>
+                                <li>Enter the required numbers in the input fields</li>
+                                <li>Click "Calculate" to get the result</li>
+                                <li>Use "Clear All" to reset all fields</li>
+                            </ol>
+
+                            <h5 class="mt-4">Percentage Calculation Types</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Calculations</h6>
+                                    <ul>
+                                        <li><strong>What is X% of Y?</strong> - Find percentage of a number</li>
+                                        <li><strong>X is what % of Y?</strong> - Find percentage ratio</li>
+                                        <li><strong>Percentage Change</strong> - Calculate increase/decrease</li>
+                                        <li><strong>Increase/Decrease by %</strong> - Apply percentage change</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Common Uses</h6>
+                                    <ul>
+                                        <li>Calculate discounts and sales</li>
+                                        <li>Determine tax amounts</li>
+                                        <li>Calculate tips and gratuities</li>
+                                        <li>Analyze growth rates</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePercentageCalculator();
+        });
+
+        function initializePercentageCalculator() {
+            // Add any initialization code here
+        }
+
+        function calculatePercentage() {
+            const percentage = parseFloat(document.getElementById('percentage1').value);
+            const number = parseFloat(document.getElementById('number1').value);
+            
+            if (isNaN(percentage) || isNaN(number)) {
+                showNotification('Please enter valid numbers', 'warning');
+                return;
+            }
+            
+            const result = (percentage / 100) * number;
+            document.getElementById('result1Value').textContent = `${percentage}% of ${number} = ${result.toFixed(2)}`;
+            document.getElementById('result1').style.display = 'block';
+            
+            showNotification('Percentage calculated successfully', 'success');
+        }
+
+        function calculatePercentageOf() {
+            const number1 = parseFloat(document.getElementById('number2').value);
+            const number2 = parseFloat(document.getElementById('number3').value);
+            
+            if (isNaN(number1) || isNaN(number2) || number2 === 0) {
+                showNotification('Please enter valid numbers (second number cannot be zero)', 'warning');
+                return;
+            }
+            
+            const result = (number1 / number2) * 100;
+            document.getElementById('result2Value').textContent = `${number1} is ${result.toFixed(2)}% of ${number2}`;
+            document.getElementById('result2').style.display = 'block';
+            
+            showNotification('Percentage ratio calculated successfully', 'success');
+        }
+
+        function calculatePercentageChange() {
+            const oldValue = parseFloat(document.getElementById('oldValue').value);
+            const newValue = parseFloat(document.getElementById('newValue').value);
+            
+            if (isNaN(oldValue) || isNaN(newValue) || oldValue === 0) {
+                showNotification('Please enter valid numbers (old value cannot be zero)', 'warning');
+                return;
+            }
+            
+            const change = ((newValue - oldValue) / oldValue) * 100;
+            const changeType = change >= 0 ? 'increase' : 'decrease';
+            const changeText = change >= 0 ? 'increased' : 'decreased';
+            
+            document.getElementById('result3Value').textContent = 
+                `The value ${changeText} by ${Math.abs(change).toFixed(2)}% (from ${oldValue} to ${newValue})`;
+            document.getElementById('result3').style.display = 'block';
+            
+            showNotification('Percentage change calculated successfully', 'success');
+        }
+
+        function calculateIncreaseDecrease() {
+            const baseNumber = parseFloat(document.getElementById('baseNumber').value);
+            const changePercentage = parseFloat(document.getElementById('changePercentage').value);
+            const changeType = document.getElementById('changeType').value;
+            
+            if (isNaN(baseNumber) || isNaN(changePercentage)) {
+                showNotification('Please enter valid numbers', 'warning');
+                return;
+            }
+            
+            let result;
+            if (changeType === 'increase') {
+                result = baseNumber + (baseNumber * changePercentage / 100);
+            } else {
+                result = baseNumber - (baseNumber * changePercentage / 100);
+            }
+            
+            const changeText = changeType === 'increase' ? 'increased' : 'decreased';
+            document.getElementById('result4Value').textContent = 
+                `${baseNumber} ${changeText} by ${changePercentage}% = ${result.toFixed(2)}`;
+            document.getElementById('result4').style.display = 'block';
+            
+            showNotification('Increase/decrease calculated successfully', 'success');
+        }
+
+        function clearAll() {
+            // Clear all input fields
+            document.getElementById('percentage1').value = '';
+            document.getElementById('number1').value = '';
+            document.getElementById('number2').value = '';
+            document.getElementById('number3').value = '';
+            document.getElementById('oldValue').value = '';
+            document.getElementById('newValue').value = '';
+            document.getElementById('baseNumber').value = '';
+            document.getElementById('changePercentage').value = '';
+            
+            // Hide all results
+            document.getElementById('result1').style.display = 'none';
+            document.getElementById('result2').style.display = 'none';
+            document.getElementById('result3').style.display = 'none';
+            document.getElementById('result4').style.display = 'none';
+            
+            showNotification('All fields cleared', 'info');
+        }
+    </script>
+</body>
+</html>

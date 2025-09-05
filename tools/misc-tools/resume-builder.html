@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Builder - Multi-Tools Hub</title>
+  <meta name="description" content="Create a simple resume. Fill details and export to PDF (print)." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../../assets/css/style.css" rel="stylesheet" />
+  <style>
+    .resume-preview{background:#fff;border:1px solid #e9ecef;border-radius:.5rem;padding:1.5rem}
+    .resume-header{border-bottom:2px solid #e9ecef;margin-bottom:1rem;padding-bottom:.5rem}
+    .resume-section h5{border-left:4px solid #0d6efd;padding-left:.5rem;margin-top:1rem}
+    @media print { body { background:#fff } .no-print{ display:none!important } .resume-preview{ border:none } }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="tool-page">
+    <div class="container py-5">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="tool-content">
+            <div class="tool-header">
+              <h1 class="mb-1">Resume Builder</h1>
+              <p class="text-muted">Fill in details, preview, and print to PDF</p>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input id="name" class="form-control" placeholder="John Doe" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input id="title" class="form-control" placeholder="Software Engineer" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contact (Email | Phone | Location)</label>
+              <input id="contact" class="form-control" placeholder="john@example.com | +1 555-555 | City" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Summary</label>
+              <textarea id="summary" class="form-control" rows="3" placeholder="2-3 sentences about you"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Skills (comma-separated)</label>
+              <input id="skills" class="form-control" placeholder="JavaScript, HTML, CSS, React" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Experience (one per line)</label>
+              <textarea id="experience" class="form-control" rows="4" placeholder="Company - Role - Dates - Key achievement"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Education (one per line)</label>
+              <textarea id="education" class="form-control" rows="3" placeholder="School - Degree - Dates"></textarea>
+            </div>
+            <div class="d-flex gap-2 no-print">
+              <button id="updateBtn" class="btn btn-primary" type="button">Update Preview</button>
+              <button id="printBtn" class="btn btn-outline-secondary" type="button">Print / PDF</button>
+            </div>
+
+            <div class="ad-banner text-center mt-3 no-print">
+              <div class="ad-placeholder bg-light border rounded p-3"><p class="text-muted mb-0">Advertisement Space</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div id="resume" class="resume-preview">
+            <div class="resume-header">
+              <h2 id="pName" class="mb-0">John Doe</h2>
+              <div id="pTitle" class="text-muted">Software Engineer</div>
+              <small id="pContact" class="text-muted">john@example.com | +1 555-555 | City</small>
+            </div>
+            <div class="resume-section">
+              <h5>Summary</h5>
+              <p id="pSummary">2-3 sentences about you</p>
+            </div>
+            <div class="resume-section">
+              <h5>Skills</h5>
+              <ul id="pSkills" class="mb-0"><li>JavaScript</li><li>HTML</li><li>CSS</li></ul>
+            </div>
+            <div class="resume-section">
+              <h5>Experience</h5>
+              <ul id="pExperience" class="mb-0"><li>Company - Role - Dates - Key achievement</li></ul>
+            </div>
+            <div class="resume-section">
+              <h5>Education</h5>
+              <ul id="pEducation" class="mb-0"><li>School - Degree - Dates</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+  <script>
+    function val(id){ return document.getElementById(id).value.trim(); }
+    function setHtml(id, html){ document.getElementById(id).innerHTML = html; }
+    function linesToLis(text){ return text.split(/\n+/).filter(Boolean).map(x=>`<li>${x}</li>`).join(''); }
+    function csvToLis(text){ return text.split(/,/).map(x=>x.trim()).filter(Boolean).map(x=>`<li>${x}</li>`).join(''); }
+    document.getElementById('updateBtn').addEventListener('click', ()=>{
+      setHtml('pName', val('name')||'John Doe');
+      setHtml('pTitle', val('title')||'Software Engineer');
+      setHtml('pContact', val('contact')||'john@example.com | +1 555-555 | City');
+      setHtml('pSummary', (val('summary')||'2-3 sentences about you').replace(/\n/g,'<br/>'));
+      setHtml('pSkills', csvToLis(val('skills')||'JavaScript, HTML, CSS'));
+      setHtml('pExperience', linesToLis(val('experience')||'Company - Role - Dates - Key achievement'));
+      setHtml('pEducation', linesToLis(val('education')||'School - Degree - Dates'));
+    });
+    document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+  </script>
+</body>
+</html>
+
+

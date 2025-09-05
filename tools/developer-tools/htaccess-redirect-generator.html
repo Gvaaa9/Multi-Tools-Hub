@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTACCESS Redirect Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Generate HTACCESS redirect rules online for free. Create 301, 302, and other redirect rules easily.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-redo me-3"></i>HTACCESS Redirect Generator</h1>
+                            <p>Generate HTACCESS redirect rules for your website</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="redirectType" class="form-label">Redirect Type *</label>
+                                    <select class="form-select" id="redirectType">
+                                        <option value="301">301 - Permanent Redirect</option>
+                                        <option value="302">302 - Temporary Redirect</option>
+                                        <option value="303">303 - See Other</option>
+                                        <option value="307">307 - Temporary Redirect (Preserve Method)</option>
+                                        <option value="308">308 - Permanent Redirect (Preserve Method)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fromUrl" class="form-label">From URL *</label>
+                                    <input type="text" class="form-control" id="fromUrl" placeholder="/old-page.html">
+                                    <div class="form-text">Enter the old URL path (e.g., /old-page.html)</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="toUrl" class="form-label">To URL *</label>
+                                    <input type="text" class="form-control" id="toUrl" placeholder="/new-page.html">
+                                    <div class="form-text">Enter the new URL path (e.g., /new-page.html)</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="redirectOptions" class="form-label">Redirect Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="exactMatch" checked>
+                                        <label class="form-check-label" for="exactMatch">
+                                            Exact match only
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="caseInsensitive">
+                                        <label class="form-check-label" for="caseInsensitive">
+                                            Case insensitive
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="preserveQuery">
+                                        <label class="form-check-label" for="preserveQuery">
+                                            Preserve query string
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="generateRedirect()">
+                                        <i class="fas fa-magic me-2"></i>Generate Redirect
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearRedirect()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="htaccessOutput" class="form-label">Generated HTACCESS Code</label>
+                                    <textarea class="form-control code-editor" id="htaccessOutput" rows="12" readonly placeholder="Generated HTACCESS code will appear here..."></textarea>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary" onclick="copyHTACCESS()">
+                                        <i class="fas fa-copy me-2"></i>Copy HTACCESS
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadHTACCESS()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info" id="redirectStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use HTACCESS Redirect Generator</h4>
+                            <ol>
+                                <li>Select the redirect type (301, 302, etc.)</li>
+                                <li>Enter the old URL path in the "From URL" field</li>
+                                <li>Enter the new URL path in the "To URL" field</li>
+                                <li>Configure redirect options as needed</li>
+                                <li>Click "Generate Redirect" to create the HTACCESS code</li>
+                                <li>Copy or download the generated code</li>
+                            </ol>
+
+                            <h5 class="mt-4">Redirect Types Explained</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Permanent Redirects</h6>
+                                    <ul>
+                                        <li><strong>301:</strong> Permanent redirect - SEO friendly</li>
+                                        <li><strong>308:</strong> Permanent redirect with method preservation</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Temporary Redirects</h6>
+                                    <ul>
+                                        <li><strong>302:</strong> Temporary redirect - commonly used</li>
+                                        <li><strong>303:</strong> See other - for POST redirects</li>
+                                        <li><strong>307:</strong> Temporary redirect with method preservation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeHTACCESSGenerator();
+        });
+
+        function initializeHTACCESSGenerator() {
+            // Add any initialization code here
+        }
+
+        function generateRedirect() {
+            const redirectType = document.getElementById('redirectType').value;
+            const fromUrl = document.getElementById('fromUrl').value.trim();
+            const toUrl = document.getElementById('toUrl').value.trim();
+            const htaccessOutput = document.getElementById('htaccessOutput');
+            const redirectStatus = document.getElementById('redirectStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (!fromUrl || !toUrl) {
+                showNotification('Please enter both From URL and To URL', 'warning');
+                return;
+            }
+
+            try {
+                const htaccessCode = generateHTACCESSCode(redirectType, fromUrl, toUrl);
+                htaccessOutput.value = htaccessCode;
+                
+                redirectStatus.className = 'alert alert-success';
+                redirectStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i>HTACCESS redirect code generated successfully';
+                
+                showNotification('HTACCESS redirect code generated successfully', 'success');
+            } catch (error) {
+                redirectStatus.className = 'alert alert-danger';
+                redirectStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error generating redirect: ' + error.message;
+                
+                showNotification('Error generating redirect: ' + error.message, 'error');
+            }
+        }
+
+        function generateHTACCESSCode(redirectType, fromUrl, toUrl) {
+            const exactMatch = document.getElementById('exactMatch').checked;
+            const caseInsensitive = document.getElementById('caseInsensitive').checked;
+            const preserveQuery = document.getElementById('preserveQuery').checked;
+            
+            let htaccessCode = '';
+            
+            // Add RewriteEngine On if not present
+            htaccessCode += 'RewriteEngine On\n\n';
+            
+            // Generate redirect rule
+            if (exactMatch) {
+                // Exact match redirect
+                htaccessCode += `# Redirect ${fromUrl} to ${toUrl}\n`;
+                htaccessCode += `Redirect ${redirectType} ${fromUrl} ${toUrl}\n\n`;
+            } else {
+                // Rewrite rule for pattern matching
+                htaccessCode += `# Rewrite rule for ${fromUrl} to ${toUrl}\n`;
+                
+                let pattern = fromUrl;
+                if (caseInsensitive) {
+                    pattern = `(?i)${pattern}`;
+                }
+                
+                let target = toUrl;
+                if (preserveQuery) {
+                    target += '?%{QUERY_STRING}';
+                }
+                
+                htaccessCode += `RewriteRule ^${pattern}$ ${target} [R=${redirectType},L]\n\n`;
+            }
+            
+            // Add additional helpful comments
+            htaccessCode += '# Additional redirect rules can be added below\n';
+            htaccessCode += '# Make sure to test your redirects before going live\n';
+            
+            return htaccessCode;
+        }
+
+        function clearRedirect() {
+            document.getElementById('fromUrl').value = '';
+            document.getElementById('toUrl').value = '';
+            document.getElementById('htaccessOutput').value = '';
+            document.getElementById('redirectStatus').style.display = 'none';
+        }
+
+        function copyHTACCESS() {
+            const htaccessOutput = document.getElementById('htaccessOutput');
+            const text = htaccessOutput.value;
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('HTACCESS code copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy HTACCESS code', 'error');
+                });
+            } else {
+                showNotification('No HTACCESS code to copy', 'warning');
+            }
+        }
+
+        function downloadHTACCESS() {
+            const htaccessOutput = document.getElementById('htaccessOutput');
+            const text = htaccessOutput.value;
+            
+            if (text.trim()) {
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = '.htaccess';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('HTACCESS file downloaded', 'success');
+            } else {
+                showNotification('No HTACCESS code to download', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

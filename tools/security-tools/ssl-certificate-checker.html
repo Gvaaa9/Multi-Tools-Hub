@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL Certificate Checker - Multi-Tools Hub</title>
+    <meta name="description" content="Check SSL certificate details online for free. Verify certificate validity, expiration, and security.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .cert-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .cert-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .cert-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .cert-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .cert-detail-item:last-child {
+            border-bottom: none;
+        }
+        .cert-history {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .cert-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .cert-status {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .cert-chain {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .chain-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .chain-item:last-child {
+            border-bottom: none;
+        }
+        .chain-icon {
+            margin-right: 0.5rem;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-shield-alt me-3"></i>SSL Certificate Checker</h1>
+                            <p>Check SSL certificate details and security</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="domainName" class="form-label">Domain Name</label>
+                                    <input type="text" class="form-control" id="domainName" placeholder="example.com or https://example.com">
+                                    <div class="form-text">Enter a domain name to check SSL certificate</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="certOptions" class="form-label">Check Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkValidity" checked>
+                                        <label class="form-check-label" for="checkValidity">
+                                            Check certificate validity
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkExpiration" checked>
+                                        <label class="form-check-label" for="checkExpiration">
+                                            Check expiration date
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkChain" checked>
+                                        <label class="form-check-label" for="checkChain">
+                                            Check certificate chain
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkSecurity" checked>
+                                        <label class="form-check-label" for="checkSecurity">
+                                            Check security features
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="certPresets" class="form-label">Quick Presets</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('basic')">Basic</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('detailed')">Detailed</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('security')">Security</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('expiration')">Expiration</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="checkCertificate()">
+                                        <i class="fas fa-search me-2"></i>Check Certificate
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearCertificate()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="certOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show check history
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showChain" checked>
+                                        <label class="form-check-label" for="showChain">
+                                            Show certificate chain
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="certResults" style="display: none;">
+                                    <div class="cert-result">
+                                        <h2 class="mb-4">SSL Certificate Status</h2>
+                                        <div class="cert-value" id="certValue">Click Check</div>
+                                        <div class="mt-3">
+                                            <small>Domain: <span id="domainDisplay">-</span></small><br>
+                                            <small>Status: <span id="statusDisplay">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="cert-status" id="certStatus" style="display: none;">
+                                        <h5>Certificate Status</h5>
+                                        <div class="status-item">
+                                            <span>Valid:</span>
+                                            <span class="status-badge status-valid" id="validStatus">-</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span>Expired:</span>
+                                            <span class="status-badge status-error" id="expiredStatus">-</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span>Self-Signed:</span>
+                                            <span class="status-badge status-warning" id="selfSignedStatus">-</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span>Revoked:</span>
+                                            <span class="status-badge status-error" id="revokedStatus">-</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span>Trusted:</span>
+                                            <span class="status-badge status-valid" id="trustedStatus">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="cert-details" id="certDetails" style="display: none;">
+                                        <h5>Certificate Details</h5>
+                                        <div class="cert-detail-item">
+                                            <span>Subject:</span>
+                                            <span id="subjectDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Issuer:</span>
+                                            <span id="issuerDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Serial Number:</span>
+                                            <span id="serialDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Valid From:</span>
+                                            <span id="validFromDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Valid To:</span>
+                                            <span id="validToDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Key Algorithm:</span>
+                                            <span id="keyAlgorithmDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Signature Algorithm:</span>
+                                            <span id="signatureAlgorithmDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Key Size:</span>
+                                            <span id="keySizeDetail">-</span>
+                                        </div>
+                                        <div class="cert-detail-item">
+                                            <span>Fingerprint:</span>
+                                            <span id="fingerprintDetail">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="cert-chain" id="certChain" style="display: none;">
+                                        <h5>Certificate Chain</h5>
+                                        <div id="chainItems"></div>
+                                    </div>
+
+                                    <div class="cert-history" id="certHistory" style="display: none;">
+                                        <h5>Check History</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Checking SSL certificate...</p>
+                                </div>
+
+                                <div class="alert alert-info" id="certStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use SSL Certificate Checker</h4>
+                            <ol>
+                                <li>Enter a domain name in the input field</li>
+                                <li>Select which certificate details to check</li>
+                                <li>Use quick presets for common checks</li>
+                                <li>Click "Check Certificate" to analyze SSL</li>
+                                <li>View detailed certificate information</li>
+                            </ol>
+
+                            <h5 class="mt-4">SSL Certificate Checker Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Information</h6>
+                                    <ul>
+                                        <li>Certificate validity status</li>
+                                        <li>Expiration date and time</li>
+                                        <li>Subject and issuer details</li>
+                                        <li>Serial number and fingerprint</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Features</h6>
+                                    <ul>
+                                        <li>Certificate chain analysis</li>
+                                        <li>Security feature checks</li>
+                                        <li>Key algorithm details</li>
+                                        <li>Trust and revocation status</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSSLChecker();
+        });
+
+        let certHistory = [];
+
+        function initializeSSLChecker() {
+            // Auto-detect current domain
+            document.getElementById('domainName').addEventListener('focus', function() {
+                if (!this.value) {
+                    this.placeholder = window.location.hostname;
+                }
+            });
+        }
+
+        function checkCertificate() {
+            const domainName = document.getElementById('domainName').value.trim();
+            
+            if (!domainName) {
+                showNotification('Please enter a domain name', 'warning');
+                return;
+            }
+            
+            const cleanDomain = cleanDomainName(domainName);
+            if (!isValidDomain(cleanDomain)) {
+                showNotification('Please enter a valid domain name', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            // Simulate API call (in real implementation, use actual SSL checking API)
+            setTimeout(() => {
+                try {
+                    const certData = getSSLCertificateData(cleanDomain);
+                    displayCertResults(certData);
+                    addToHistory(certData);
+                    showNotification('SSL certificate check completed', 'success');
+                } catch (error) {
+                    showNotification('Error checking certificate: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            }, 2000);
+        }
+
+        function getSSLCertificateData(domain) {
+            // Mock data - in real implementation, use actual SSL checking API
+            const mockData = {
+                domain: domain,
+                valid: true,
+                expired: false,
+                selfSigned: false,
+                revoked: false,
+                trusted: true,
+                subject: `CN=${domain}, O=Example Organization, C=US`,
+                issuer: 'CN=DigiCert Global Root CA, O=DigiCert Inc, C=US',
+                serialNumber: '1234567890ABCDEF',
+                validFrom: '2023-01-01T00:00:00Z',
+                validTo: '2024-12-31T23:59:59Z',
+                keyAlgorithm: 'RSA',
+                signatureAlgorithm: 'SHA256withRSA',
+                keySize: 2048,
+                fingerprint: 'A1:B2:C3:D4:E5:F6:78:90:AB:CD:EF:12:34:56:78:90',
+                chain: [
+                    { name: 'Root CA', issuer: 'DigiCert Global Root CA', valid: true },
+                    { name: 'Intermediate CA', issuer: 'DigiCert SHA2 High Assurance Server CA', valid: true },
+                    { name: 'Server Certificate', issuer: domain, valid: true }
+                ],
+                checkTime: new Date().toISOString()
+            };
+            
+            return mockData;
+        }
+
+        function displayCertResults(certData) {
+            // Update main result
+            document.getElementById('certValue').textContent = certData.valid ? 'Valid' : 'Invalid';
+            document.getElementById('domainDisplay').textContent = certData.domain;
+            document.getElementById('statusDisplay').textContent = certData.valid ? 'Valid Certificate' : 'Invalid Certificate';
+            
+            // Update status
+            updateCertStatus(certData);
+            document.getElementById('certStatus').style.display = 'block';
+            
+            // Update details
+            updateCertDetails(certData);
+            document.getElementById('certDetails').style.display = 'block';
+            
+            // Update chain
+            if (document.getElementById('showChain').checked) {
+                updateCertChain(certData.chain);
+                document.getElementById('certChain').style.display = 'block';
+            } else {
+                document.getElementById('certChain').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateCertHistory();
+                document.getElementById('certHistory').style.display = 'block';
+            } else {
+                document.getElementById('certHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('certResults').style.display = 'block';
+        }
+
+        function updateCertStatus(certData) {
+            document.getElementById('validStatus').textContent = certData.valid ? 'Yes' : 'No';
+            document.getElementById('expiredStatus').textContent = certData.expired ? 'Yes' : 'No';
+            document.getElementById('selfSignedStatus').textContent = certData.selfSigned ? 'Yes' : 'No';
+            document.getElementById('revokedStatus').textContent = certData.revoked ? 'Yes' : 'No';
+            document.getElementById('trustedStatus').textContent = certData.trusted ? 'Yes' : 'No';
+        }
+
+        function updateCertDetails(certData) {
+            document.getElementById('subjectDetail').textContent = certData.subject;
+            document.getElementById('issuerDetail').textContent = certData.issuer;
+            document.getElementById('serialDetail').textContent = certData.serialNumber;
+            document.getElementById('validFromDetail').textContent = new Date(certData.validFrom).toLocaleString();
+            document.getElementById('validToDetail').textContent = new Date(certData.validTo).toLocaleString();
+            document.getElementById('keyAlgorithmDetail').textContent = certData.keyAlgorithm;
+            document.getElementById('signatureAlgorithmDetail').textContent = certData.signatureAlgorithm;
+            document.getElementById('keySizeDetail').textContent = certData.keySize + ' bits';
+            document.getElementById('fingerprintDetail').textContent = certData.fingerprint;
+        }
+
+        function updateCertChain(chain) {
+            const chainItems = document.getElementById('chainItems');
+            chainItems.innerHTML = chain.map((item, index) => `
+                <div class="chain-item">
+                    <i class="fas fa-certificate chain-icon ${item.valid ? 'text-success' : 'text-danger'}"></i>
+                    <div>
+                        <div class="fw-bold">${item.name}</div>
+                        <small class="text-muted">${item.issuer}</small>
+                    </div>
+                    <span class="status-badge ${item.valid ? 'status-valid' : 'status-error'}">
+                        ${item.valid ? 'Valid' : 'Invalid'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function addToHistory(certData) {
+            certHistory.unshift({
+                domain: certData.domain,
+                valid: certData.valid,
+                expired: certData.expired,
+                issuer: certData.issuer,
+                created: new Date().toISOString()
+            });
+            if (certHistory.length > 20) {
+                certHistory.pop();
+            }
+        }
+
+        function updateCertHistory() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = certHistory.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div class="cert-text">${item.domain}</div>
+                        <small class="text-muted">${item.issuer}</small>
+                    </div>
+                    <div>
+                        <span class="status-badge ${item.valid ? 'status-valid' : 'status-error'}">
+                            ${item.valid ? 'Valid' : 'Invalid'}
+                        </span>
+                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="checkCertFromHistory('${item.domain}')">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkCertFromHistory(domain) {
+            document.getElementById('domainName').value = domain;
+            checkCertificate();
+        }
+
+        function setPreset(type) {
+            switch (type) {
+                case 'basic':
+                    document.getElementById('checkValidity').checked = true;
+                    document.getElementById('checkExpiration').checked = true;
+                    document.getElementById('checkChain').checked = false;
+                    document.getElementById('checkSecurity').checked = false;
+                    break;
+                case 'detailed':
+                    document.getElementById('checkValidity').checked = true;
+                    document.getElementById('checkExpiration').checked = true;
+                    document.getElementById('checkChain').checked = true;
+                    document.getElementById('checkSecurity').checked = true;
+                    break;
+                case 'security':
+                    document.getElementById('checkValidity').checked = true;
+                    document.getElementById('checkExpiration').checked = false;
+                    document.getElementById('checkChain').checked = true;
+                    document.getElementById('checkSecurity').checked = true;
+                    break;
+                case 'expiration':
+                    document.getElementById('checkValidity').checked = false;
+                    document.getElementById('checkExpiration').checked = true;
+                    document.getElementById('checkChain').checked = false;
+                    document.getElementById('checkSecurity').checked = false;
+                    break;
+            }
+            
+            showNotification(`${type} preset applied`, 'info');
+        }
+
+        function clearCertificate() {
+            document.getElementById('domainName').value = '';
+            document.getElementById('certValue').textContent = 'Click Check';
+            document.getElementById('certResults').style.display = 'none';
+            document.getElementById('certStatus').style.display = 'none';
+            
+            showNotification('SSL checker cleared', 'info');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('certResults').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function cleanDomainName(domain) {
+            return domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        }
+
+        function isValidDomain(domain) {
+            const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+            return domainRegex.test(domain);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Convert energy units online for free. Convert between joules, calories, kilowatt-hours, and more.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .conversion-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .conversion-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .conversion-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .conversion-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .conversion-detail-item:last-child {
+            border-bottom: none;
+        }
+        .unit-selector {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .unit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .unit-item:last-child {
+            border-bottom: none;
+        }
+        .unit-value {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-bolt me-3"></i>Energy Converter</h1>
+                            <p>Convert between different energy units</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="inputValue" class="form-label">Enter Value *</label>
+                                    <input type="number" class="form-control" id="inputValue" placeholder="Enter energy value" step="0.000001">
+                                    <div class="form-text">Enter the energy value to convert</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit</label>
+                                    <select class="form-select" id="fromUnit">
+                                        <option value="joule">Joule (J)</option>
+                                        <option value="kilojoule">Kilojoule (kJ)</option>
+                                        <option value="megajoule">Megajoule (MJ)</option>
+                                        <option value="calorie">Calorie (cal)</option>
+                                        <option value="kilocalorie">Kilocalorie (kcal)</option>
+                                        <option value="watt_hour">Watt Hour (Wh)</option>
+                                        <option value="kilowatt_hour">Kilowatt Hour (kWh)</option>
+                                        <option value="megawatt_hour">Megawatt Hour (MWh)</option>
+                                        <option value="btu">British Thermal Unit (BTU)</option>
+                                        <option value="therm">Therm (thm)</option>
+                                        <option value="foot_pound">Foot Pound (ft·lb)</option>
+                                        <option value="electron_volt">Electron Volt (eV)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="toUnit" class="form-label">To Unit</label>
+                                    <select class="form-select" id="toUnit">
+                                        <option value="kilowatt_hour">Kilowatt Hour (kWh)</option>
+                                        <option value="joule">Joule (J)</option>
+                                        <option value="kilojoule">Kilojoule (kJ)</option>
+                                        <option value="megajoule">Megajoule (MJ)</option>
+                                        <option value="calorie">Calorie (cal)</option>
+                                        <option value="kilocalorie">Kilocalorie (kcal)</option>
+                                        <option value="watt_hour">Watt Hour (Wh)</option>
+                                        <option value="megawatt_hour">Megawatt Hour (MWh)</option>
+                                        <option value="btu">British Thermal Unit (BTU)</option>
+                                        <option value="therm">Therm (thm)</option>
+                                        <option value="foot_pound">Foot Pound (ft·lb)</option>
+                                        <option value="electron_volt">Electron Volt (eV)</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="convertEnergy()">
+                                        <i class="fas fa-exchange-alt me-2"></i>Convert
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="swapUnits()">
+                                        <i class="fas fa-arrows-alt-h me-2"></i>Swap
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearEnergy()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="conversionOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showAllUnits" checked>
+                                        <label class="form-check-label" for="showAllUnits">
+                                            Show all unit conversions
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showPrecision" checked>
+                                        <label class="form-check-label" for="showPrecision">
+                                            Show high precision
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="conversionResults" style="display: none;">
+                                    <div class="conversion-result">
+                                        <h2 class="mb-4">Converted Energy</h2>
+                                        <div class="conversion-value" id="convertedValue">0</div>
+                                        <div class="mt-3">
+                                            <small>From: <span id="fromUnitText">Joule</span></small><br>
+                                            <small>To: <span id="toUnitText">Kilowatt Hour</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="conversion-details" id="allUnits" style="display: none;">
+                                        <h5>All Unit Conversions</h5>
+                                        <div id="allUnitsList"></div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="conversionStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Energy Converter</h4>
+                            <ol>
+                                <li>Enter the energy value you want to convert</li>
+                                <li>Select the source unit (from)</li>
+                                <li>Select the target unit (to)</li>
+                                <li>Click "Convert" to get the result</li>
+                                <li>Use "Swap" to reverse the conversion</li>
+                            </ol>
+
+                            <h5 class="mt-4">Supported Energy Units</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>SI Units</h6>
+                                    <ul>
+                                        <li>Joule (J) - Base unit</li>
+                                        <li>Kilojoule (kJ) - 1,000 J</li>
+                                        <li>Megajoule (MJ) - 1,000,000 J</li>
+                                        <li>Watt Hour (Wh) - 3,600 J</li>
+                                        <li>Kilowatt Hour (kWh) - 3,600,000 J</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Other Units</h6>
+                                    <ul>
+                                        <li>Calorie (cal) - 4.184 J</li>
+                                        <li>Kilocalorie (kcal) - 4,184 J</li>
+                                        <li>BTU - 1,055 J</li>
+                                        <li>Therm - 105,500,000 J</li>
+                                        <li>Foot Pound - 1.356 J</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEnergyConverter();
+        });
+
+        // Energy conversion factors (all relative to joules)
+        const energyFactors = {
+            'joule': 1,
+            'kilojoule': 1000,
+            'megajoule': 1000000,
+            'calorie': 4.184,
+            'kilocalorie': 4184,
+            'watt_hour': 3600,
+            'kilowatt_hour': 3600000,
+            'megawatt_hour': 3600000000,
+            'btu': 1055.05585262,
+            'therm': 105500000,
+            'foot_pound': 1.3558179483314,
+            'electron_volt': 1.602176634e-19
+        };
+
+        const unitNames = {
+            'joule': 'Joule',
+            'kilojoule': 'Kilojoule',
+            'megajoule': 'Megajoule',
+            'calorie': 'Calorie',
+            'kilocalorie': 'Kilocalorie',
+            'watt_hour': 'Watt Hour',
+            'kilowatt_hour': 'Kilowatt Hour',
+            'megawatt_hour': 'Megawatt Hour',
+            'btu': 'British Thermal Unit',
+            'therm': 'Therm',
+            'foot_pound': 'Foot Pound',
+            'electron_volt': 'Electron Volt'
+        };
+
+        function initializeEnergyConverter() {
+            // Add any initialization code here
+        }
+
+        function convertEnergy() {
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            
+            if (isNaN(inputValue) || inputValue < 0) {
+                showNotification('Please enter a valid positive number', 'warning');
+                return;
+            }
+            
+            if (fromUnit === toUnit) {
+                showNotification('Please select different units', 'warning');
+                return;
+            }
+            
+            try {
+                const result = performEnergyConversion(inputValue, fromUnit, toUnit);
+                displayEnergyResults(result, inputValue, fromUnit, toUnit);
+                showNotification('Energy converted successfully', 'success');
+            } catch (error) {
+                showNotification('Error converting energy: ' + error.message, 'error');
+            }
+        }
+
+        function performEnergyConversion(value, fromUnit, toUnit) {
+            // Convert to joules first
+            const joules = value * energyFactors[fromUnit];
+            
+            // Convert from joules to target unit
+            const converted = joules / energyFactors[toUnit];
+            
+            // Convert to all units for display
+            const allUnits = {};
+            Object.keys(energyFactors).forEach(unit => {
+                allUnits[unit] = joules / energyFactors[unit];
+            });
+            
+            return {
+                converted,
+                allUnits,
+                joules
+            };
+        }
+
+        function displayEnergyResults(result, inputValue, fromUnit, toUnit) {
+            const precision = document.getElementById('showPrecision').checked ? 6 : 2;
+            
+            // Update main result
+            document.getElementById('convertedValue').textContent = result.converted.toFixed(precision);
+            document.getElementById('fromUnitText').textContent = unitNames[fromUnit];
+            document.getElementById('toUnitText').textContent = unitNames[toUnit];
+            
+            // Update all units
+            if (document.getElementById('showAllUnits').checked) {
+                const allUnitsList = document.getElementById('allUnitsList');
+                allUnitsList.innerHTML = Object.entries(result.allUnits)
+                    .map(([unit, value]) => `
+                        <div class="unit-item">
+                            <span>${unitNames[unit]} (${unit}):</span>
+                            <span class="unit-value">${value.toFixed(precision)}</span>
+                        </div>
+                    `).join('');
+                document.getElementById('allUnits').style.display = 'block';
+            } else {
+                document.getElementById('allUnits').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('conversionResults').style.display = 'block';
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            
+            const temp = fromUnit.value;
+            fromUnit.value = toUnit.value;
+            toUnit.value = temp;
+            
+            showNotification('Units swapped', 'info');
+        }
+
+        function clearEnergy() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('conversionResults').style.display = 'none';
+            document.getElementById('conversionStatus').style.display = 'none';
+            
+            showNotification('Energy converter cleared', 'info');
+        }
+    </script>
+</body>
+</html>

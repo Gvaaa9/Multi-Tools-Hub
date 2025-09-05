@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electric Bill Calculator - Multi-Tools Hub</title>
+  <meta name="description" content="Estimate electricity bill based on units (kWh), slab rates, and fixed charges." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="header"></div>
+  <div class="tool-page">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="tool-content">
+            <div class="tool-header">
+              <h1 class="mb-1">Electric Bill Calculator</h1>
+              <p class="text-muted">Basic slab-based estimate (customizable)</p>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4"><label class="form-label">Units (kWh)</label><input id="units" type="number" class="form-control" value="250" min="0" step="0.01" /></div>
+              <div class="col-md-4"><label class="form-label">Fixed Charge</label><input id="fixed" type="number" class="form-control" value="50" min="0" step="0.01" /></div>
+              <div class="col-md-4 d-grid"><label class="form-label">&nbsp;</label><button id="calc" class="btn btn-primary">Calculate</button></div>
+            </div>
+            <div class="table-responsive mb-3">
+              <table class="table align-middle">
+                <thead><tr><th>Slab</th><th>Rate</th><th>Units</th><th>Amount</th></tr></thead>
+                <tbody id="rows"></tbody>
+                <tfoot>
+                  <tr><th colspan="3" class="text-end">Energy Charge</th><td id="energy">0.00</td></tr>
+                  <tr><th colspan="3" class="text-end">Fixed Charge</th><td id="fixedAmt">0.00</td></tr>
+                  <tr><th colspan="3" class="text-end">Total</th><td id="total" class="fw-bold">0.00</td></tr>
+                </tfoot>
+              </table>
+            </div>
+            <div class="small text-muted">Example slabs: 0-100 @ ₹3.0, 101-200 @ ₹4.0, 201+ @ ₹5.5 (edit in code as needed).</div>
+            <div class="ad-banner text-center mt-3"><div class="ad-placeholder bg-light border rounded p-3"><p class="text-muted mb-0">Advertisement Space</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+  <script>
+    const SLABS = [
+      { upto:100, rate:3.0, label:'0-100' },
+      { upto:200, rate:4.0, label:'101-200' },
+      { upto:Infinity, rate:5.5, label:'201+' }
+    ];
+    function money(n){ return Number(n).toFixed(2); }
+    function calc(){
+      let units = parseFloat(document.getElementById('units').value)||0;
+      const fixed = parseFloat(document.getElementById('fixed').value)||0;
+      const rows = document.getElementById('rows'); rows.innerHTML='';
+      let consumed=0, energy=0, prev=0;
+      for(const s of SLABS){
+        if(units<=0) break;
+        const limit = (s.upto===Infinity? Infinity : s.upto - prev);
+        const u = Math.max(0, Math.min(units, limit));
+        const amt = u * s.rate; energy += amt; consumed += u; units -= u; prev = s.upto;
+        if(u>0){
+          const tr=document.createElement('tr'); tr.innerHTML=`<td>${s.label}</td><td>${money(s.rate)}</td><td>${u}</td><td>${money(amt)}</td>`; rows.appendChild(tr);
+        }
+      }
+      document.getElementById('energy').textContent = money(energy);
+      document.getElementById('fixedAmt').textContent = money(fixed);
+      document.getElementById('total').textContent = money(energy+fixed);
+    }
+    document.getElementById('calc').addEventListener('click', calc);
+    calc();
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to JPG Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Convert any image format to JPG with our free online image converter. Supports PNG, GIF, BMP, WebP and more formats.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-file-image me-3"></i>Image to JPG Converter</h1>
+                            <p>Convert any image format to JPG with customizable quality settings</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="upload-area border border-2 border-dashed rounded p-5 text-center mb-4" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h5>Upload Image</h5>
+                                    <p class="text-muted">Drag and drop your image here or click to browse</p>
+                                    <input type="file" id="imageInput" accept="image/*" class="d-none">
+                                    <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                                        Choose File
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="preview-area border rounded p-3 text-center" id="previewArea" style="display: none;">
+                                    <h6>Preview</h6>
+                                    <img id="previewImage" class="img-fluid rounded mb-3" style="max-height: 200px;">
+                                    <div class="image-info">
+                                        <small class="text-muted" id="imageInfo"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="quality" class="form-label">JPG Quality (1-100)</label>
+                                    <input type="range" class="form-range" id="quality" min="1" max="100" value="85">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Low Quality</small>
+                                        <small class="text-muted" id="qualityValue">85</small>
+                                        <small class="text-muted">High Quality</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="backgroundColor" class="form-label">Background Color (for transparent images)</label>
+                                    <input type="color" class="form-control form-control-color" id="backgroundColor" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <button class="btn btn-success btn-lg" id="convertBtn" disabled>
+                                <i class="fas fa-download me-2"></i>Convert to JPG
+                            </button>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Convert Image to JPG</h4>
+                            <ol>
+                                <li>Click "Choose File" or drag and drop your image into the upload area</li>
+                                <li>Adjust the quality slider (1-100, higher = better quality but larger file)</li>
+                                <li>Choose background color for transparent images (PNG, GIF)</li>
+                                <li>Click "Convert to JPG" to start the conversion process</li>
+                                <li>Download your converted JPG image</li>
+                            </ol>
+
+                            <h5 class="mt-4">Supported Formats</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li>PNG</li>
+                                        <li>GIF</li>
+                                        <li>BMP</li>
+                                        <li>TIFF</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li>WebP</li>
+                                        <li>ICO</li>
+                                        <li>SVG</li>
+                                        <li>RAW formats</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <h5 class="mt-4">Why Convert to JPG?</h5>
+                            <ul>
+                                <li><strong>Smaller file size:</strong> JPG compression significantly reduces file size</li>
+                                <li><strong>Universal compatibility:</strong> Supported by all devices and platforms</li>
+                                <li><strong>Web optimization:</strong> Perfect for web use and social media</li>
+                                <li><strong>Quality control:</strong> Adjustable compression for optimal balance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        let selectedFile = null;
+
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeImageToJPG();
+        });
+
+        function initializeImageToJPG() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const qualitySlider = document.getElementById('quality');
+            const qualityValue = document.getElementById('qualityValue');
+            const convertBtn = document.getElementById('convertBtn');
+
+            // File input change
+            imageInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+
+            // Quality slider
+            qualitySlider.addEventListener('input', function() {
+                qualityValue.textContent = this.value;
+            });
+
+            // Convert button
+            convertBtn.addEventListener('click', convertToJPG);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                processFile(file);
+            } else {
+                showNotification('Please select a valid image file', 'error');
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('border-primary');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('border-primary');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('border-primary');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    processFile(file);
+                } else {
+                    showNotification('Please drop a valid image file', 'error');
+                }
+            }
+        }
+
+        function processFile(file) {
+            selectedFile = file;
+            
+            // Show preview
+            const previewArea = document.getElementById('previewArea');
+            const previewImage = document.getElementById('previewImage');
+            const imageInfo = document.getElementById('imageInfo');
+            const convertBtn = document.getElementById('convertBtn');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewArea.style.display = 'block';
+                
+                // Show image info
+                const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                imageInfo.textContent = `${file.name} (${sizeInMB} MB)`;
+                
+                convertBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function convertToJPG() {
+            if (!selectedFile) {
+                showNotification('Please select an image first', 'error');
+                return;
+            }
+
+            const convertBtn = document.getElementById('convertBtn');
+            const result = document.getElementById('result');
+            const quality = document.getElementById('quality').value / 100;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            
+            convertBtn.disabled = true;
+            convertBtn.innerHTML = '<span class="loading"></span> Converting...';
+
+            // Simulate conversion process
+            setTimeout(() => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        // Fill background color for transparent images
+                        ctx.fillStyle = backgroundColor;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Draw image on canvas
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Convert to JPG
+                        const jpgDataURL = canvas.toDataURL('image/jpeg', quality);
+                        
+                        // Create download link
+                        const link = document.createElement('a');
+                        link.download = selectedFile.name.replace(/\.[^/.]+$/, '') + '.jpg';
+                        link.href = jpgDataURL;
+                        
+                        // Show result
+                        result.innerHTML = `
+                            <div class="text-center">
+                                <h5 class="text-success mb-3">Conversion Successful!</h5>
+                                <p>Your image has been converted to JPG format.</p>
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        Quality: ${Math.round(quality * 100)}% | 
+                                        Background: ${backgroundColor}
+                                    </small>
+                                </div>
+                                <button class="btn btn-primary" onclick="this.previousElementSibling.previousElementSibling.click()">
+                                    <i class="fas fa-download me-2"></i>Download JPG
+                                </button>
+                                <a href="${jpgDataURL}" class="btn btn-outline-secondary ms-2" target="_blank">
+                                    <i class="fas fa-external-link-alt me-2"></i>Preview
+                                </a>
+                            </div>
+                        `;
+                        result.style.display = 'block';
+                        
+                        // Auto-click download
+                        link.click();
+                        
+                        showNotification('Image converted to JPG successfully!', 'success');
+                    };
+                    
+                    img.src = URL.createObjectURL(selectedFile);
+                    
+                } catch (error) {
+                    showNotification('Error converting image: ' + error.message, 'error');
+                    result.innerHTML = '<p class="text-danger">Error: ' + error.message + '</p>';
+                    result.style.display = 'block';
+                }
+                
+                convertBtn.disabled = false;
+                convertBtn.innerHTML = '<i class="fas fa-download me-2"></i>Convert to JPG';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML to Markdown Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Convert HTML to Markdown format online for free. Clean and readable Markdown output with proper formatting.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-code me-3"></i>HTML to Markdown Converter</h1>
+                            <p>Convert HTML code to clean and readable Markdown format</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="htmlInput" class="form-label">Enter HTML Code *</label>
+                                    <textarea class="form-control code-editor" id="htmlInput" rows="12" placeholder="Paste your HTML code here..."></textarea>
+                                    <div class="form-text">Enter HTML code to convert to Markdown</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="convertToMarkdown()">
+                                        <i class="fas fa-exchange-alt me-2"></i>Convert to Markdown
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearHTML()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="conversionOptions" class="form-label">Conversion Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="removeEmptyLines" checked>
+                                        <label class="form-check-label" for="removeEmptyLines">
+                                            Remove empty lines
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="preserveLinks" checked>
+                                        <label class="form-check-label" for="preserveLinks">
+                                            Preserve links
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="preserveImages" checked>
+                                        <label class="form-check-label" for="preserveImages">
+                                            Preserve images
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="markdownOutput" class="form-label">Markdown Output</label>
+                                    <textarea class="form-control code-editor" id="markdownOutput" rows="12" readonly placeholder="Markdown output will appear here..."></textarea>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary" onclick="copyMarkdown()">
+                                        <i class="fas fa-copy me-2"></i>Copy Markdown
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadMarkdown()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info" id="conversionStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use HTML to Markdown Converter</h4>
+                            <ol>
+                                <li>Paste your HTML code into the input area</li>
+                                <li>Configure conversion options as needed</li>
+                                <li>Click "Convert to Markdown" to generate Markdown</li>
+                                <li>Copy or download the converted Markdown</li>
+                            </ol>
+
+                            <h5 class="mt-4">Supported HTML Elements</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Text Formatting</h6>
+                                    <ul>
+                                        <li>Headings (h1-h6) → # ## ###</li>
+                                        <li>Bold text → **text**</li>
+                                        <li>Italic text → *text*</li>
+                                        <li>Code → `code`</li>
+                                        <li>Lists → - item or 1. item</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Other Elements</h6>
+                                    <ul>
+                                        <li>Links → [text](url)</li>
+                                        <li>Images → ![alt](src)</li>
+                                        <li>Blockquotes → > quote</li>
+                                        <li>Tables → | col1 | col2 |</li>
+                                        <li>Horizontal rules → ---</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeHTMLToMarkdown();
+        });
+
+        function initializeHTMLToMarkdown() {
+            // Add any initialization code here
+        }
+
+        function convertToMarkdown() {
+            const htmlInput = document.getElementById('htmlInput');
+            const markdownOutput = document.getElementById('markdownOutput');
+            const conversionStatus = document.getElementById('conversionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            const html = htmlInput.value.trim();
+            
+            if (!html) {
+                showNotification('Please enter HTML code to convert', 'warning');
+                return;
+            }
+
+            try {
+                const markdown = htmlToMarkdown(html);
+                markdownOutput.value = markdown;
+                
+                conversionStatus.className = 'alert alert-success';
+                conversionStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i>HTML converted to Markdown successfully';
+                
+                showNotification('HTML converted to Markdown successfully', 'success');
+            } catch (error) {
+                conversionStatus.className = 'alert alert-danger';
+                conversionStatus.style.display = 'block';
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error converting HTML: ' + error.message;
+                
+                showNotification('Error converting HTML: ' + error.message, 'error');
+            }
+        }
+
+        function htmlToMarkdown(html) {
+            // Create a temporary div to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            let markdown = '';
+            
+            // Process each child node
+            for (let node of tempDiv.childNodes) {
+                markdown += processNode(node);
+            }
+            
+            // Apply options
+            const removeEmptyLines = document.getElementById('removeEmptyLines').checked;
+            if (removeEmptyLines) {
+                markdown = markdown.replace(/\n\s*\n\s*\n/g, '\n\n');
+            }
+            
+            return markdown.trim();
+        }
+
+        function processNode(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.textContent;
+            }
+            
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const content = Array.from(node.childNodes).map(processNode).join('');
+                
+                switch (tagName) {
+                    case 'h1':
+                        return `# ${content}\n\n`;
+                    case 'h2':
+                        return `## ${content}\n\n`;
+                    case 'h3':
+                        return `### ${content}\n\n`;
+                    case 'h4':
+                        return `#### ${content}\n\n`;
+                    case 'h5':
+                        return `##### ${content}\n\n`;
+                    case 'h6':
+                        return `###### ${content}\n\n`;
+                    case 'p':
+                        return `${content}\n\n`;
+                    case 'strong':
+                    case 'b':
+                        return `**${content}**`;
+                    case 'em':
+                    case 'i':
+                        return `*${content}*`;
+                    case 'code':
+                        return `\`${content}\``;
+                    case 'pre':
+                        return `\`\`\`\n${content}\n\`\`\`\n\n`;
+                    case 'a':
+                        const href = node.getAttribute('href');
+                        return href ? `[${content}](${href})` : content;
+                    case 'img':
+                        const src = node.getAttribute('src');
+                        const alt = node.getAttribute('alt') || '';
+                        return src ? `![${alt}](${src})` : '';
+                    case 'ul':
+                        return `${content}\n`;
+                    case 'ol':
+                        return `${content}\n`;
+                    case 'li':
+                        return `- ${content}\n`;
+                    case 'blockquote':
+                        return `> ${content}\n\n`;
+                    case 'hr':
+                        return `---\n\n`;
+                    case 'br':
+                        return `\n`;
+                    case 'div':
+                        return `${content}\n`;
+                    default:
+                        return content;
+                }
+            }
+            
+            return '';
+        }
+
+        function clearHTML() {
+            document.getElementById('htmlInput').value = '';
+            document.getElementById('markdownOutput').value = '';
+            document.getElementById('conversionStatus').style.display = 'none';
+        }
+
+        function copyMarkdown() {
+            const markdownOutput = document.getElementById('markdownOutput');
+            const text = markdownOutput.value;
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Markdown copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy Markdown', 'error');
+                });
+            } else {
+                showNotification('No Markdown to copy', 'warning');
+            }
+        }
+
+        function downloadMarkdown() {
+            const markdownOutput = document.getElementById('markdownOutput');
+            const text = markdownOutput.value;
+            
+            if (text.trim()) {
+                const blob = new Blob([text], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'converted.md';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('Markdown file downloaded', 'success');
+            } else {
+                showNotification('No Markdown to download', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

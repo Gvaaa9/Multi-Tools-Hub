@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter - Multi-Tools Hub</title>
+    <meta name="description" content="Convert temperature units online for free. Convert between Celsius, Fahrenheit, Kelvin, and more.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .conversion-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .conversion-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .conversion-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .conversion-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .conversion-detail-item:last-child {
+            border-bottom: none;
+        }
+        .unit-selector {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .unit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .unit-item:last-child {
+            border-bottom: none;
+        }
+        .unit-value {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .temperature-scale {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .scale-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .scale-item:last-child {
+            border-bottom: none;
+        }
+        .scale-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .celsius { background-color: #ff6b6b; }
+        .fahrenheit { background-color: #4ecdc4; }
+        .kelvin { background-color: #45b7d1; }
+        .rankine { background-color: #96ceb4; }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-thermometer-half me-3"></i>Temperature Converter</h1>
+                            <p>Convert between different temperature units</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="inputValue" class="form-label">Enter Value *</label>
+                                    <input type="number" class="form-control" id="inputValue" placeholder="Enter temperature value" step="0.01">
+                                    <div class="form-text">Enter the temperature value to convert</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="fromUnit" class="form-label">From Unit</label>
+                                    <select class="form-select" id="fromUnit">
+                                        <option value="celsius">Celsius (°C)</option>
+                                        <option value="fahrenheit">Fahrenheit (°F)</option>
+                                        <option value="kelvin">Kelvin (K)</option>
+                                        <option value="rankine">Rankine (°R)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="toUnit" class="form-label">To Unit</label>
+                                    <select class="form-select" id="toUnit">
+                                        <option value="fahrenheit">Fahrenheit (°F)</option>
+                                        <option value="celsius">Celsius (°C)</option>
+                                        <option value="kelvin">Kelvin (K)</option>
+                                        <option value="rankine">Rankine (°R)</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="convertTemperature()">
+                                        <i class="fas fa-exchange-alt me-2"></i>Convert
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="swapUnits()">
+                                        <i class="fas fa-arrows-alt-h me-2"></i>Swap
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearTemperature()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="conversionOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showAllUnits" checked>
+                                        <label class="form-check-label" for="showAllUnits">
+                                            Show all unit conversions
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showPrecision" checked>
+                                        <label class="form-check-label" for="showPrecision">
+                                            Show high precision
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="conversionResults" style="display: none;">
+                                    <div class="conversion-result">
+                                        <h2 class="mb-4">Converted Temperature</h2>
+                                        <div class="conversion-value" id="convertedValue">0</div>
+                                        <div class="mt-3">
+                                            <small>From: <span id="fromUnitText">Celsius</span></small><br>
+                                            <small>To: <span id="toUnitText">Fahrenheit</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="conversion-details" id="allUnits" style="display: none;">
+                                        <h5>All Unit Conversions</h5>
+                                        <div id="allUnitsList"></div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info" id="conversionStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Temperature Converter</h4>
+                            <ol>
+                                <li>Enter the temperature value you want to convert</li>
+                                <li>Select the source unit (from)</li>
+                                <li>Select the target unit (to)</li>
+                                <li>Click "Convert" to get the result</li>
+                                <li>Use "Swap" to reverse the conversion</li>
+                            </ol>
+
+                            <h5 class="mt-4">Supported Temperature Units</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Common Scales</h6>
+                                    <ul>
+                                        <li>Celsius (°C) - Metric system</li>
+                                        <li>Fahrenheit (°F) - Imperial system</li>
+                                        <li>Kelvin (K) - Scientific scale</li>
+                                        <li>Rankine (°R) - Absolute scale</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Key Points</h6>
+                                    <ul>
+                                        <li>Water freezes at 0°C, 32°F, 273.15K</li>
+                                        <li>Water boils at 100°C, 212°F, 373.15K</li>
+                                        <li>Absolute zero is 0K, -273.15°C</li>
+                                        <li>Room temperature is ~20°C, ~68°F</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTemperatureConverter();
+        });
+
+        const unitNames = {
+            'celsius': 'Celsius',
+            'fahrenheit': 'Fahrenheit',
+            'kelvin': 'Kelvin',
+            'rankine': 'Rankine'
+        };
+
+        const unitSymbols = {
+            'celsius': '°C',
+            'fahrenheit': '°F',
+            'kelvin': 'K',
+            'rankine': '°R'
+        };
+
+        function initializeTemperatureConverter() {
+            // Add any initialization code here
+        }
+
+        function convertTemperature() {
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            
+            if (isNaN(inputValue)) {
+                showNotification('Please enter a valid number', 'warning');
+                return;
+            }
+            
+            if (fromUnit === toUnit) {
+                showNotification('Please select different units', 'warning');
+                return;
+            }
+            
+            try {
+                const result = performTemperatureConversion(inputValue, fromUnit, toUnit);
+                displayTemperatureResults(result, inputValue, fromUnit, toUnit);
+                showNotification('Temperature converted successfully', 'success');
+            } catch (error) {
+                showNotification('Error converting temperature: ' + error.message, 'error');
+            }
+        }
+
+        function performTemperatureConversion(value, fromUnit, toUnit) {
+            // Convert to Celsius first
+            let celsius;
+            switch (fromUnit) {
+                case 'celsius':
+                    celsius = value;
+                    break;
+                case 'fahrenheit':
+                    celsius = (value - 32) * 5/9;
+                    break;
+                case 'kelvin':
+                    celsius = value - 273.15;
+                    break;
+                case 'rankine':
+                    celsius = (value - 491.67) * 5/9;
+                    break;
+            }
+            
+            // Convert from Celsius to target unit
+            let converted;
+            switch (toUnit) {
+                case 'celsius':
+                    converted = celsius;
+                    break;
+                case 'fahrenheit':
+                    converted = (celsius * 9/5) + 32;
+                    break;
+                case 'kelvin':
+                    converted = celsius + 273.15;
+                    break;
+                case 'rankine':
+                    converted = (celsius * 9/5) + 491.67;
+                    break;
+            }
+            
+            // Convert to all units for display
+            const allUnits = {
+                'celsius': celsius,
+                'fahrenheit': (celsius * 9/5) + 32,
+                'kelvin': celsius + 273.15,
+                'rankine': (celsius * 9/5) + 491.67
+            };
+            
+            return {
+                converted,
+                allUnits,
+                celsius
+            };
+        }
+
+        function displayTemperatureResults(result, inputValue, fromUnit, toUnit) {
+            const precision = document.getElementById('showPrecision').checked ? 2 : 0;
+            
+            // Update main result
+            document.getElementById('convertedValue').textContent = result.converted.toFixed(precision);
+            document.getElementById('fromUnitText').textContent = unitNames[fromUnit];
+            document.getElementById('toUnitText').textContent = unitNames[toUnit];
+            
+            // Update all units
+            if (document.getElementById('showAllUnits').checked) {
+                const allUnitsList = document.getElementById('allUnitsList');
+                allUnitsList.innerHTML = Object.entries(result.allUnits)
+                    .map(([unit, value]) => `
+                        <div class="unit-item">
+                            <span>
+                                <span class="scale-color ${unit}"></span>
+                                ${unitNames[unit]} (${unitSymbols[unit]}):
+                            </span>
+                            <span class="unit-value">${value.toFixed(precision)}</span>
+                        </div>
+                    `).join('');
+                document.getElementById('allUnits').style.display = 'block';
+            } else {
+                document.getElementById('allUnits').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('conversionResults').style.display = 'block';
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            
+            const temp = fromUnit.value;
+            fromUnit.value = toUnit.value;
+            toUnit.value = temp;
+            
+            showNotification('Units swapped', 'info');
+        }
+
+        function clearTemperature() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('conversionResults').style.display = 'none';
+            document.getElementById('conversionStatus').style.display = 'none';
+            
+            showNotification('Temperature converter cleared', 'info');
+        }
+    </script>
+</body>
+</html>

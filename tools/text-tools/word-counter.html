@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter - Multi-Tools Hub</title>
+    <meta name="description" content="Count words, characters, sentences, and paragraphs in your text. Free online word counter with detailed statistics.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-font me-3"></i>Word Counter</h1>
+                            <p>Count words, characters, sentences, and paragraphs with detailed statistics</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label for="textInput" class="form-label">Enter Your Text *</label>
+                                    <textarea class="form-control" id="textInput" rows="10" placeholder="Type or paste your text here to count words, characters, sentences, and paragraphs..."></textarea>
+                                    <div class="form-text">Start typing to see real-time word count statistics</div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-secondary" onclick="clearText()">
+                                        <i class="fas fa-trash me-2"></i>Clear Text
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="pasteText()">
+                                        <i class="fas fa-paste me-2"></i>Paste Text
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="copyText()">
+                                        <i class="fas fa-copy me-2"></i>Copy Text
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-preview border rounded p-3" id="statsPreview">
+                                    <h6>Word Count Statistics</h6>
+                                    <p class="text-muted">Start typing to see statistics</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Word Counter</h4>
+                            <ol>
+                                <li>Type or paste your text into the text area</li>
+                                <li>Watch the real-time statistics update as you type</li>
+                                <li>Use the buttons to clear, paste, or copy text</li>
+                                <li>View detailed statistics including reading time estimates</li>
+                            </ol>
+
+                            <h5 class="mt-4">What We Count</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Counts</h6>
+                                    <ul>
+                                        <li><strong>Words:</strong> Individual words separated by spaces</li>
+                                        <li><strong>Characters:</strong> Total characters including spaces</li>
+                                        <li><strong>Characters (no spaces):</strong> Characters excluding spaces</li>
+                                        <li><strong>Sentences:</strong> Sentences ending with . ! or ?</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Advanced Statistics</h6>
+                                    <ul>
+                                        <li><strong>Paragraphs:</strong> Text blocks separated by line breaks</li>
+                                        <li><strong>Reading Time:</strong> Estimated time to read the text</li>
+                                        <li><strong>Speaking Time:</strong> Estimated time to speak the text</li>
+                                        <li><strong>Average Words per Sentence:</strong> Text complexity metric</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWordCounter();
+        });
+
+        function initializeWordCounter() {
+            const textInput = document.getElementById('textInput');
+
+            // Real-time counting
+            textInput.addEventListener('input', updateWordCount);
+            textInput.addEventListener('paste', function() {
+                setTimeout(updateWordCount, 100);
+            });
+
+            // Initial update
+            updateWordCount();
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('textInput').value;
+            const stats = calculateWordCount(text);
+            displayStats(stats);
+        }
+
+        function calculateWordCount(text) {
+            if (!text.trim()) {
+                return {
+                    words: 0,
+                    characters: 0,
+                    charactersNoSpaces: 0,
+                    sentences: 0,
+                    paragraphs: 0,
+                    readingTime: 0,
+                    speakingTime: 0,
+                    averageWordsPerSentence: 0,
+                    averageCharactersPerWord: 0
+                };
+            }
+
+            // Basic counts
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            const characters = text.length;
+            const charactersNoSpaces = text.replace(/\s/g, '').length;
+            
+            // Sentences (ending with . ! or ?)
+            const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0).length;
+            
+            // Paragraphs (separated by double line breaks or single line breaks)
+            const paragraphs = text.split(/\n\s*\n/).filter(paragraph => paragraph.trim().length > 0).length;
+            
+            // Reading time (average 200 words per minute)
+            const readingTime = Math.ceil(words / 200);
+            
+            // Speaking time (average 150 words per minute)
+            const speakingTime = Math.ceil(words / 150);
+            
+            // Average words per sentence
+            const averageWordsPerSentence = sentences > 0 ? Math.round((words / sentences) * 10) / 10 : 0;
+            
+            // Average characters per word
+            const averageCharactersPerWord = words > 0 ? Math.round((charactersNoSpaces / words) * 10) / 10 : 0;
+
+            return {
+                words,
+                characters,
+                charactersNoSpaces,
+                sentences,
+                paragraphs,
+                readingTime,
+                speakingTime,
+                averageWordsPerSentence,
+                averageCharactersPerWord
+            };
+        }
+
+        function displayStats(stats) {
+            const preview = document.getElementById('statsPreview');
+            
+            if (stats.words === 0) {
+                preview.innerHTML = `
+                    <h6>Word Count Statistics</h6>
+                    <p class="text-muted">Start typing to see statistics</p>
+                `;
+                return;
+            }
+
+            preview.innerHTML = `
+                <h6>Word Count Statistics</h6>
+                <div class="row text-center">
+                    <div class="col-6 mb-2">
+                        <div class="border rounded p-2">
+                            <h5 class="text-primary mb-0">${stats.words}</h5>
+                            <small class="text-muted">Words</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="border rounded p-2">
+                            <h5 class="text-success mb-0">${stats.characters}</h5>
+                            <small class="text-muted">Characters</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="border rounded p-2">
+                            <h5 class="text-info mb-0">${stats.sentences}</h5>
+                            <small class="text-muted">Sentences</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="border rounded p-2">
+                            <h5 class="text-warning mb-0">${stats.paragraphs}</h5>
+                            <small class="text-muted">Paragraphs</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        Reading time: ${stats.readingTime} min<br>
+                        Speaking time: ${stats.speakingTime} min
+                    </small>
+                </div>
+            `;
+        }
+
+        function clearText() {
+            document.getElementById('textInput').value = '';
+            updateWordCount();
+        }
+
+        function pasteText() {
+            navigator.clipboard.readText().then(text => {
+                document.getElementById('textInput').value = text;
+                updateWordCount();
+            }).catch(() => {
+                showNotification('Unable to access clipboard', 'error');
+            });
+        }
+
+        function copyText() {
+            const text = document.getElementById('textInput').value;
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Text copied to clipboard', 'success');
+                }).catch(() => {
+                    showNotification('Unable to copy text', 'error');
+                });
+            } else {
+                showNotification('No text to copy', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

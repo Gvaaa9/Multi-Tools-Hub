@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Tag Generator - Multi-Tools Hub</title>
+    <meta name="description" content="Generate meta tags for your website for better SEO. Create title, description, keywords, Open Graph, and Twitter Card meta tags.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fas fa-tags me-3"></i>Meta Tag Generator</h1>
+                            <p>Generate comprehensive meta tags for better SEO and social media sharing</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Basic Information</h5>
+                                <div class="form-group mb-3">
+                                    <label for="pageTitle" class="form-label">Page Title *</label>
+                                    <input type="text" class="form-control" id="pageTitle" placeholder="Your Page Title" maxlength="60">
+                                    <div class="form-text">Recommended: 50-60 characters</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="pageDescription" class="form-label">Meta Description *</label>
+                                    <textarea class="form-control" id="pageDescription" rows="3" placeholder="Brief description of your page" maxlength="160"></textarea>
+                                    <div class="form-text">Recommended: 150-160 characters</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="keywords" class="form-label">Keywords</label>
+                                    <input type="text" class="form-control" id="keywords" placeholder="keyword1, keyword2, keyword3">
+                                    <div class="form-text">Separate keywords with commas</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="author" class="form-label">Author</label>
+                                    <input type="text" class="form-control" id="author" placeholder="Author Name">
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="canonicalUrl" class="form-label">Canonical URL</label>
+                                    <input type="url" class="form-control" id="canonicalUrl" placeholder="https://example.com/page">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Open Graph (Facebook)</h5>
+                                <div class="form-group mb-3">
+                                    <label for="ogTitle" class="form-label">OG Title</label>
+                                    <input type="text" class="form-control" id="ogTitle" placeholder="Open Graph Title">
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="ogDescription" class="form-label">OG Description</label>
+                                    <textarea class="form-control" id="ogDescription" rows="2" placeholder="Open Graph Description"></textarea>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="ogImage" class="form-label">OG Image URL</label>
+                                    <input type="url" class="form-control" id="ogImage" placeholder="https://example.com/image.jpg">
+                                    <div class="form-text">Recommended: 1200x630px</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="ogType" class="form-label">OG Type</label>
+                                    <select class="form-select" id="ogType">
+                                        <option value="website">Website</option>
+                                        <option value="article">Article</option>
+                                        <option value="product">Product</option>
+                                        <option value="video">Video</option>
+                                        <option value="music">Music</option>
+                                    </select>
+                                </div>
+
+                                <h5 class="mt-4">Twitter Card</h5>
+                                <div class="form-group mb-3">
+                                    <label for="twitterCard" class="form-label">Twitter Card Type</label>
+                                    <select class="form-select" id="twitterCard">
+                                        <option value="summary">Summary</option>
+                                        <option value="summary_large_image">Summary Large Image</option>
+                                        <option value="app">App</option>
+                                        <option value="player">Player</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="twitterSite" class="form-label">Twitter Site</label>
+                                    <input type="text" class="form-control" id="twitterSite" placeholder="@username">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <button class="btn btn-primary btn-lg" id="generateBtn">
+                                <i class="fas fa-magic me-2"></i>Generate Meta Tags
+                            </button>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use Meta Tag Generator</h4>
+                            <ol>
+                                <li>Fill in the basic information (title, description, keywords)</li>
+                                <li>Add Open Graph data for better Facebook sharing</li>
+                                <li>Configure Twitter Card settings for Twitter sharing</li>
+                                <li>Click "Generate Meta Tags" to create your HTML code</li>
+                                <li>Copy and paste the generated code into your HTML head section</li>
+                            </ol>
+
+                            <h5 class="mt-4">Meta Tags Explained</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Basic Meta Tags</h6>
+                                    <ul>
+                                        <li><strong>Title:</strong> Appears in search results and browser tabs</li>
+                                        <li><strong>Description:</strong> Shows in search result snippets</li>
+                                        <li><strong>Keywords:</strong> Helps search engines understand content</li>
+                                        <li><strong>Author:</strong> Identifies the content creator</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Social Media Tags</h6>
+                                    <ul>
+                                        <li><strong>Open Graph:</strong> Controls how content appears on Facebook</li>
+                                        <li><strong>Twitter Cards:</strong> Enhances Twitter sharing appearance</li>
+                                        <li><strong>Canonical URL:</strong> Prevents duplicate content issues</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMetaTagGenerator();
+        });
+
+        function initializeMetaTagGenerator() {
+            const generateBtn = document.getElementById('generateBtn');
+            const pageTitle = document.getElementById('pageTitle');
+            const pageDescription = document.getElementById('pageDescription');
+
+            // Auto-fill Open Graph fields when basic fields change
+            pageTitle.addEventListener('input', function() {
+                if (!document.getElementById('ogTitle').value) {
+                    document.getElementById('ogTitle').value = this.value;
+                }
+            });
+
+            pageDescription.addEventListener('input', function() {
+                if (!document.getElementById('ogDescription').value) {
+                    document.getElementById('ogDescription').value = this.value;
+                }
+            });
+
+            // Generate button
+            generateBtn.addEventListener('click', generateMetaTags);
+        }
+
+        function generateMetaTags() {
+            const pageTitle = document.getElementById('pageTitle').value.trim();
+            const pageDescription = document.getElementById('pageDescription').value.trim();
+            const keywords = document.getElementById('keywords').value.trim();
+            const author = document.getElementById('author').value.trim();
+            const canonicalUrl = document.getElementById('canonicalUrl').value.trim();
+            const ogTitle = document.getElementById('ogTitle').value.trim();
+            const ogDescription = document.getElementById('ogDescription').value.trim();
+            const ogImage = document.getElementById('ogImage').value.trim();
+            const ogType = document.getElementById('ogType').value;
+            const twitterCard = document.getElementById('twitterCard').value;
+            const twitterSite = document.getElementById('twitterSite').value.trim();
+
+            if (!pageTitle || !pageDescription) {
+                showNotification('Please fill in at least the page title and description', 'error');
+                return;
+            }
+
+            let metaTags = '<!-- Basic Meta Tags -->\n';
+            metaTags += `<title>${escapeHtml(pageTitle)}</title>\n`;
+            metaTags += `<meta name="description" content="${escapeHtml(pageDescription)}">\n`;
+            
+            if (keywords) {
+                metaTags += `<meta name="keywords" content="${escapeHtml(keywords)}">\n`;
+            }
+            
+            if (author) {
+                metaTags += `<meta name="author" content="${escapeHtml(author)}">\n`;
+            }
+            
+            metaTags += `<meta name="viewport" content="width=device-width, initial-scale=1.0">\n`;
+            metaTags += `<meta charset="UTF-8">\n`;
+            
+            if (canonicalUrl) {
+                metaTags += `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">\n`;
+            }
+
+            metaTags += '\n<!-- Open Graph Meta Tags -->\n';
+            metaTags += `<meta property="og:title" content="${escapeHtml(ogTitle || pageTitle)}">\n`;
+            metaTags += `<meta property="og:description" content="${escapeHtml(ogDescription || pageDescription)}">\n`;
+            metaTags += `<meta property="og:type" content="${ogType}">\n`;
+            
+            if (ogImage) {
+                metaTags += `<meta property="og:image" content="${escapeHtml(ogImage)}">\n`;
+            }
+            
+            if (canonicalUrl) {
+                metaTags += `<meta property="og:url" content="${escapeHtml(canonicalUrl)}">\n`;
+            }
+
+            metaTags += '\n<!-- Twitter Card Meta Tags -->\n';
+            metaTags += `<meta name="twitter:card" content="${twitterCard}">\n`;
+            metaTags += `<meta name="twitter:title" content="${escapeHtml(ogTitle || pageTitle)}">\n`;
+            metaTags += `<meta name="twitter:description" content="${escapeHtml(ogDescription || pageDescription)}">\n`;
+            
+            if (ogImage) {
+                metaTags += `<meta name="twitter:image" content="${escapeHtml(ogImage)}">\n`;
+            }
+            
+            if (twitterSite) {
+                metaTags += `<meta name="twitter:site" content="${escapeHtml(twitterSite)}">\n`;
+            }
+
+            metaTags += '\n<!-- Additional SEO Meta Tags -->\n';
+            metaTags += `<meta name="robots" content="index, follow">\n`;
+            metaTags += `<meta name="googlebot" content="index, follow">\n`;
+            metaTags += `<meta name="language" content="English">\n`;
+            metaTags += `<meta name="revisit-after" content="7 days">\n`;
+
+            // Show result
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div class="text-center">
+                    <h5 class="text-success mb-3">Meta Tags Generated Successfully!</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Generated HTML Code:</label>
+                        <textarea class="form-control" rows="15" readonly id="generatedCode">${metaTags}</textarea>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-primary" onclick="copyToClipboard(document.getElementById('generatedCode').value)">
+                            <i class="fas fa-copy me-2"></i>Copy Code
+                        </button>
+                        <button class="btn btn-success" onclick="downloadMetaTags()">
+                            <i class="fas fa-download me-2"></i>Download HTML
+                        </button>
+                        <button class="btn btn-info" onclick="previewMetaTags()">
+                            <i class="fas fa-eye me-2"></i>Preview
+                        </button>
+                    </div>
+                </div>
+            `;
+            result.style.display = 'block';
+
+            // Store for download
+            window.generatedMetaTags = metaTags;
+
+            showNotification('Meta tags generated successfully!', 'success');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function downloadMetaTags() {
+            if (window.generatedMetaTags) {
+                const blob = new Blob([window.generatedMetaTags], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'meta-tags.html';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function previewMetaTags() {
+            const pageTitle = document.getElementById('pageTitle').value || 'Your Page Title';
+            const pageDescription = document.getElementById('pageDescription').value || 'Your page description';
+            const ogImage = document.getElementById('ogImage').value;
+
+            let previewHTML = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    ${window.generatedMetaTags || ''}
+                </head>
+                <body>
+                    <div style="padding: 20px; font-family: Arial, sans-serif;">
+                        <h1>${escapeHtml(pageTitle)}</h1>
+                        <p>${escapeHtml(pageDescription)}</p>
+                        ${ogImage ? `<img src="${escapeHtml(ogImage)}" alt="${escapeHtml(pageTitle)}" style="max-width: 100%; height: auto;">` : ''}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(previewHTML);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>

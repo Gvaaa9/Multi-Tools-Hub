@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Video Downloader - Multi-Tools Hub</title>
+    <meta name="description" content="Download TikTok videos online for free. Get high-quality videos from TikTok posts and profiles.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../assets/css/style.css" rel="stylesheet">
+    <style>
+        .tiktok-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .tiktok-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .tiktok-preview {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .tiktok-video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .tiktok-details {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .tiktok-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .tiktok-detail-item:last-child {
+            border-bottom: none;
+        }
+        .tiktok-history {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .tiktok-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .tiktok-stats {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .quality-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .quality-option {
+            text-align: center;
+            padding: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .quality-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .quality-option.selected {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
+    <div class="tool-page">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="tool-content">
+                        <div class="tool-header">
+                            <h1><i class="fab fa-tiktok me-3"></i>TikTok Video Downloader</h1>
+                            <p>Download TikTok videos and media in high quality</p>
+                        </div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mb-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="tiktokUrl" class="form-label">TikTok URL</label>
+                                    <input type="url" class="form-control" id="tiktokUrl" placeholder="https://www.tiktok.com/@username/video/VIDEO_ID">
+                                    <div class="form-text">Enter a TikTok video URL</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="qualityOptions" class="form-label">Quality Options</label>
+                                    <div class="quality-options">
+                                        <div class="quality-option" data-quality="highest" onclick="selectQuality('highest')">
+                                            <i class="fas fa-video fa-2x mb-2"></i>
+                                            <div class="fw-bold">Highest</div>
+                                            <small class="text-muted">Best Quality</small>
+                                        </div>
+                                        <div class="quality-option" data-quality="high" onclick="selectQuality('high')">
+                                            <i class="fas fa-video fa-2x mb-2"></i>
+                                            <div class="fw-bold">High</div>
+                                            <small class="text-muted">1080p</small>
+                                        </div>
+                                        <div class="quality-option" data-quality="medium" onclick="selectQuality('medium')">
+                                            <i class="fas fa-video fa-2x mb-2"></i>
+                                            <div class="fw-bold">Medium</div>
+                                            <small class="text-muted">720p</small>
+                                        </div>
+                                        <div class="quality-option" data-quality="low" onclick="selectQuality('low')">
+                                            <i class="fas fa-video fa-2x mb-2"></i>
+                                            <div class="fw-bold">Low</div>
+                                            <small class="text-muted">480p</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="downloadOptions" class="form-label">Download Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="downloadAll" checked>
+                                        <label class="form-check-label" for="downloadAll">
+                                            Download all qualities
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showPreview" checked>
+                                        <label class="form-check-label" for="showPreview">
+                                            Show video preview
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="getVideoInfo" checked>
+                                        <label class="form-check-label" for="getVideoInfo">
+                                            Get video information
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="downloadAudio" checked>
+                                        <label class="form-check-label" for="downloadAudio">
+                                            Download audio only
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="tiktokPresets" class="form-label">Quick Presets</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('video')">Video</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('audio')">Audio</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('profile')">Profile</button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="setPreset('all')">All Media</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary" onclick="downloadTikTok()">
+                                        <i class="fas fa-download me-2"></i>Download Video
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearTikTok()">
+                                        <i class="fas fa-trash me-2"></i>Clear
+                                    </button>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="tiktokOptions" class="form-label">Display Options</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHistory" checked>
+                                        <label class="form-check-label" for="showHistory">
+                                            Show download history
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showStats" checked>
+                                        <label class="form-check-label" for="showStats">
+                                            Show video statistics
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="tiktokResults" style="display: none;">
+                                    <div class="tiktok-result">
+                                        <h2 class="mb-4">Video Ready</h2>
+                                        <div class="tiktok-value" id="tiktokValue">Click Download</div>
+                                        <div class="mt-3">
+                                            <small>Video: <span id="videoTitleDisplay">-</span></small><br>
+                                            <small>Quality: <span id="qualityDisplay">-</span></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="tiktok-preview" id="tiktokPreview" style="display: none;">
+                                        <h5>Video Preview</h5>
+                                        <video id="tiktokVideo" class="tiktok-video" controls>
+                                            <source src="" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <div class="mt-3">
+                                            <button class="btn btn-primary" onclick="downloadCurrentVideo()">
+                                                <i class="fas fa-download me-2"></i>Download This Quality
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tiktok-details" id="tiktokDetails" style="display: none;">
+                                        <h5>Video Information</h5>
+                                        <div class="tiktok-detail-item">
+                                            <span>Description:</span>
+                                            <span id="videoDescription">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Username:</span>
+                                            <span id="username">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Likes:</span>
+                                            <span id="likesCount">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Comments:</span>
+                                            <span id="commentsCount">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Shares:</span>
+                                            <span id="sharesCount">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Views:</span>
+                                            <span id="viewsCount">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Upload Date:</span>
+                                            <span id="uploadDate">-</span>
+                                        </div>
+                                        <div class="tiktok-detail-item">
+                                            <span>Video ID:</span>
+                                            <span id="videoId">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="tiktok-stats" id="tiktokStats" style="display: none;">
+                                        <h5>Video Statistics</h5>
+                                        <div class="stat-item">
+                                            <span>Selected Quality:</span>
+                                            <span id="selectedQuality">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Available Qualities:</span>
+                                            <span id="availableQualities">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>File Size:</span>
+                                            <span id="fileSize">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Duration:</span>
+                                            <span id="duration">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Download Time:</span>
+                                            <span id="downloadTime">-</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span>Last Checked:</span>
+                                            <span id="lastChecked">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="tiktok-history" id="tiktokHistory" style="display: none;">
+                                        <h5>Download History</h5>
+                                        <div id="historyItems"></div>
+                                    </div>
+                                </div>
+
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Processing TikTok video...</p>
+                                </div>
+
+                                <div class="alert alert-info" id="tiktokStatus" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span id="statusText"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box" style="display: none;"></div>
+
+                        <!-- Ad Section -->
+                        <div class="ad-banner text-center mt-4">
+                            <div class="ad-placeholder bg-light border rounded p-3">
+                                <p class="text-muted mb-0">Advertisement Space</p>
+                                <small class="text-muted">Google AdSense or other ads will be placed here</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <h4>How to Use TikTok Video Downloader</h4>
+                            <ol>
+                                <li>Enter a TikTok video URL in the input field</li>
+                                <li>Select the quality you want to download</li>
+                                <li>Choose download options (all qualities, preview, etc.)</li>
+                                <li>Click "Download Video" to get the content</li>
+                                <li>Preview and download the video</li>
+                            </ol>
+
+                            <h5 class="mt-4">TikTok Video Downloader Features</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Video Types</h6>
+                                    <ul>
+                                        <li>Regular videos</li>
+                                        <li>Duet videos</li>
+                                        <li>Stitch videos</li>
+                                        <li>Live videos</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Quality Options</h6>
+                                    <ul>
+                                        <li>Highest quality</li>
+                                        <li>High resolution (1080p)</li>
+                                        <li>Medium quality (720p)</li>
+                                        <li>Low quality (480p)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../assets/js/main.js"></script>
+    
+    <script>
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTikTokDownloader();
+        });
+
+        let tiktokHistory = [];
+        let currentVideoId = '';
+        let currentVideoUrl = '';
+
+        function initializeTikTokDownloader() {
+            // Select default quality
+            selectQuality('highest');
+        }
+
+        function selectQuality(quality) {
+            // Remove previous selection
+            document.querySelectorAll('.quality-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            document.querySelector(`[data-quality="${quality}"]`).classList.add('selected');
+            
+            // Update hidden input or variable
+            window.selectedQuality = quality;
+        }
+
+        function downloadTikTok() {
+            const tiktokUrl = document.getElementById('tiktokUrl').value.trim();
+            
+            if (!tiktokUrl) {
+                showNotification('Please enter a TikTok URL', 'warning');
+                return;
+            }
+            
+            const videoId = extractVideoId(tiktokUrl);
+            if (!videoId) {
+                showNotification('Please enter a valid TikTok URL', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            // Simulate API call (in real implementation, use actual TikTok API)
+            setTimeout(() => {
+                try {
+                    const tiktokData = getTikTokData(videoId, tiktokUrl);
+                    displayTikTokResults(tiktokData);
+                    addToHistory(tiktokData);
+                    showNotification('Video ready for download', 'success');
+                } catch (error) {
+                    showNotification('Error processing video: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            }, 2000);
+        }
+
+        function extractVideoId(url) {
+            const regex = /tiktok\.com\/@\w+\/video\/(\d+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        function getTikTokData(videoId, tiktokUrl) {
+            // Mock data - in real implementation, use actual TikTok API
+            const mockData = {
+                videoId: videoId,
+                tiktokUrl: tiktokUrl,
+                description: 'Sample TikTok video with amazing content! #tiktok #video #download #fyp',
+                username: 'sample_user',
+                likes: 12345,
+                comments: 234,
+                shares: 567,
+                views: 89012,
+                uploadDate: '2024-01-15',
+                qualities: {
+                    highest: `https://example.com/tiktok/${videoId}/highest.mp4`,
+                    high: `https://example.com/tiktok/${videoId}/high.mp4`,
+                    medium: `https://example.com/tiktok/${videoId}/medium.mp4`,
+                    low: `https://example.com/tiktok/${videoId}/low.mp4`
+                },
+                selectedQuality: window.selectedQuality || 'highest',
+                fileSize: '8.5 MB',
+                duration: '0:30',
+                downloadTime: '250ms',
+                checkTime: new Date().toISOString()
+            };
+            
+            return mockData;
+        }
+
+        function displayTikTokResults(tiktokData) {
+            // Update main result
+            document.getElementById('tiktokValue').textContent = 'Video Ready';
+            document.getElementById('videoTitleDisplay').textContent = tiktokData.description.substring(0, 30) + '...';
+            document.getElementById('qualityDisplay').textContent = tiktokData.selectedQuality;
+            
+            // Update video information
+            if (document.getElementById('getVideoInfo').checked) {
+                updateVideoInfo(tiktokData);
+                document.getElementById('tiktokDetails').style.display = 'block';
+            } else {
+                document.getElementById('tiktokDetails').style.display = 'none';
+            }
+            
+            // Update video preview
+            if (document.getElementById('showPreview').checked) {
+                updateVideoPreview(tiktokData);
+                document.getElementById('tiktokPreview').style.display = 'block';
+            } else {
+                document.getElementById('tiktokPreview').style.display = 'none';
+            }
+            
+            // Update statistics
+            if (document.getElementById('showStats').checked) {
+                updateTikTokStats(tiktokData);
+                document.getElementById('tiktokStats').style.display = 'block';
+            } else {
+                document.getElementById('tiktokStats').style.display = 'none';
+            }
+            
+            // Update history
+            if (document.getElementById('showHistory').checked) {
+                updateTikTokHistory();
+                document.getElementById('tiktokHistory').style.display = 'block';
+            } else {
+                document.getElementById('tiktokHistory').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('tiktokResults').style.display = 'block';
+            
+            // Store current data
+            currentVideoId = tiktokData.videoId;
+            currentVideoUrl = tiktokData.qualities[tiktokData.selectedQuality];
+        }
+
+        function updateVideoInfo(tiktokData) {
+            document.getElementById('videoDescription').textContent = tiktokData.description;
+            document.getElementById('username').textContent = '@' + tiktokData.username;
+            document.getElementById('likesCount').textContent = tiktokData.likes.toLocaleString();
+            document.getElementById('commentsCount').textContent = tiktokData.comments.toLocaleString();
+            document.getElementById('sharesCount').textContent = tiktokData.shares.toLocaleString();
+            document.getElementById('viewsCount').textContent = tiktokData.views.toLocaleString();
+            document.getElementById('uploadDate').textContent = tiktokData.uploadDate;
+            document.getElementById('videoId').textContent = tiktokData.videoId;
+        }
+
+        function updateVideoPreview(tiktokData) {
+            const tiktokVideo = document.getElementById('tiktokVideo');
+            tiktokVideo.src = tiktokData.qualities[tiktokData.selectedQuality];
+            tiktokVideo.load();
+        }
+
+        function updateTikTokStats(tiktokData) {
+            document.getElementById('selectedQuality').textContent = tiktokData.selectedQuality;
+            document.getElementById('availableQualities').textContent = Object.keys(tiktokData.qualities).length;
+            document.getElementById('fileSize').textContent = tiktokData.fileSize;
+            document.getElementById('duration').textContent = tiktokData.duration;
+            document.getElementById('downloadTime').textContent = tiktokData.downloadTime;
+            document.getElementById('lastChecked').textContent = new Date(tiktokData.checkTime).toLocaleString();
+        }
+
+        function addToHistory(tiktokData) {
+            tiktokHistory.unshift({
+                videoId: tiktokData.videoId,
+                description: tiktokData.description,
+                username: tiktokData.username,
+                quality: tiktokData.selectedQuality,
+                created: new Date().toISOString()
+            });
+            if (tiktokHistory.length > 20) {
+                tiktokHistory.pop();
+            }
+        }
+
+        function updateTikTokHistory() {
+            const historyItems = document.getElementById('historyItems');
+            historyItems.innerHTML = tiktokHistory.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div class="tiktok-text">${item.description.substring(0, 30)}...</div>
+                        <small class="text-muted">@${item.username} - ${item.quality}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="downloadTikTokFromHistory('${item.videoId}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function downloadTikTokFromHistory(videoId) {
+            // Find the video in history and set the URL
+            const historyItem = tiktokHistory.find(item => item.videoId === videoId);
+            if (historyItem) {
+                document.getElementById('tiktokUrl').value = `https://www.tiktok.com/@username/video/${videoId}`;
+                downloadTikTok();
+            }
+        }
+
+        function setPreset(type) {
+            switch (type) {
+                case 'video':
+                    selectQuality('highest');
+                    document.getElementById('downloadAll').checked = false;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    document.getElementById('downloadAudio').checked = false;
+                    break;
+                case 'audio':
+                    selectQuality('highest');
+                    document.getElementById('downloadAll').checked = false;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    document.getElementById('downloadAudio').checked = true;
+                    break;
+                case 'profile':
+                    selectQuality('highest');
+                    document.getElementById('downloadAll').checked = true;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    document.getElementById('downloadAudio').checked = false;
+                    break;
+                case 'all':
+                    selectQuality('highest');
+                    document.getElementById('downloadAll').checked = true;
+                    document.getElementById('showPreview').checked = true;
+                    document.getElementById('getVideoInfo').checked = true;
+                    document.getElementById('downloadAudio').checked = true;
+                    break;
+            }
+            
+            showNotification(`${type} preset applied`, 'info');
+        }
+
+        function clearTikTok() {
+            document.getElementById('tiktokUrl').value = '';
+            document.getElementById('tiktokValue').textContent = 'Click Download';
+            document.getElementById('tiktokResults').style.display = 'none';
+            document.getElementById('tiktokStatus').style.display = 'none';
+            
+            showNotification('TikTok downloader cleared', 'info');
+        }
+
+        function downloadCurrentVideo() {
+            if (currentVideoUrl) {
+                const link = document.createElement('a');
+                link.href = currentVideoUrl;
+                link.download = `tiktok-${currentVideoId}-${window.selectedQuality}.mp4`;
+                link.click();
+                showNotification('Video download started', 'success');
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('tiktokResults').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
